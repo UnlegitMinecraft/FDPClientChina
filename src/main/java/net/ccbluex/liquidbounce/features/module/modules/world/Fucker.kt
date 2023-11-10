@@ -65,16 +65,13 @@ object Fucker : Module() {
     fun onUpdate(event: UpdateEvent) {
         if (noHitValue.get()) {
             val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
-
-            if (killAura.state && killAura.target != null) {
-                return
-            }
+            return
         }
 
         val targetId = blockValue.get()
 
         if (pos == null || Block.getIdFromBlock(BlockUtils.getBlock(pos)) != targetId ||
-            BlockUtils.getCenterDistance(pos!!) > rangeValue.get()) {
+                BlockUtils.getCenterDistance(pos!!) > rangeValue.get()) {
             pos = find(targetId)
         }
 
@@ -197,7 +194,7 @@ object Fucker : Module() {
             // Use block
             actionValue.equals("use") -> {
                 if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, pos, EnumFacing.DOWN,
-                        Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
+                                Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
                     if (swingValue.equals("Normal")) {
                         mc.thePlayer.swingItem()
                     } else if (swingValue.equals("Packet")) {
@@ -221,11 +218,11 @@ object Fucker : Module() {
      */
     private fun find(targetID: Int): BlockPos? {
         val block = BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
-            .filter {
-                Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get() &&
-                        (isHitable(it.key) || surroundingsValue.get())
-            }
-            .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
+                .filter {
+                    Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get() &&
+                            (isHitable(it.key) || surroundingsValue.get())
+                }
+                .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
 
         if (bypassValue.get()) {
             val upBlock = block.up()
