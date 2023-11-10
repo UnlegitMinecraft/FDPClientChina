@@ -91,6 +91,8 @@ class SlowDownEvent(var strafe: Float, var forward: Float) : Event()
  */
 class StrafeEvent(val strafe: Float, val forward: Float, val friction: Float) : CancellableEvent()
 
+
+data class EntityMovementEvent(val movedEntity: Entity) : Event()
 /**
  * Called when player moves
  *

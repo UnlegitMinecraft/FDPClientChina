@@ -12,7 +12,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -73,18 +75,32 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             return;
         }
 
+        /**
+         * Jump Process Fix
+         * use updateFixState to reset Jump Fix state
+         * @param fixedYaw  The yaw player should have (NOT RotationYaw)
+         * @param strafeFix StrafeFix Module
+         */
+
         final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
         LiquidBounce.eventManager.callEvent(jumpEvent);
-        if(jumpEvent.isCancelled())
+        if (jumpEvent.isCancelled())
             return;
 
         this.motionY = jumpEvent.getMotion();
+        final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
+        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
 
-        if(this.isSprinting()) {
-            final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
-            float f = ((sprint.getState() && sprint.getJumpDirectionsValue().get()) ? MovementUtils.INSTANCE.getMovingYaw() : this.rotationYaw) * 0.017453292F;
-            this.motionX -= MathHelper.sin(f) * 0.2F;
-            this.motionZ += MathHelper.cos(f) * 0.2F;
+        if (this.isSprinting()) {
+            float fixedYaw = this.rotationYaw;
+            if(RotationUtils.targetRotation != null && strafeFix.getDoFix()) {
+                fixedYaw = RotationUtils.targetRotation.getYaw();
+            }
+            if(sprint.getState() && sprint.getJumpDirectionsValue().get()) {
+                fixedYaw += MovementUtils.INSTANCE.getMovingYaw() - this.rotationYaw;
+            }
+            this.motionX -= MathHelper.sin(fixedYaw / 180F * 3.1415927F) * 0.2F;
+            this.motionZ += MathHelper.cos(fixedYaw / 180F * 3.1415927F) * 0.2F;
         }
 
         this.isAirBorne = true;

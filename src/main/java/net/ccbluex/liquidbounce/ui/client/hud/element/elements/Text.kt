@@ -206,7 +206,7 @@ class Text(
                 LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5.0f, 27.0f,Color(255,255,255,220).rgb
             )
             FontLoaders.C14.drawString(
-                "CN 2022Q3 | RainbowPie UI", 5.0f, 37.0f,Color(255,255,255,220).rgb
+                "CN 2023Q4 | Reborn!", 5.0f, 37.0f,Color(255,255,255,220).rgb
             )
         }
 

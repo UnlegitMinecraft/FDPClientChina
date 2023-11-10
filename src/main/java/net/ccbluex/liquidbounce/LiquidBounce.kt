@@ -69,16 +69,16 @@ object LiquidBounce {
         if (inputStream != null) {
             it.load(inputStream)
         } else {
-            it["git.branch"] = "unofficial" // fill with default values or we'll get null pointer exceptions
+            it["git.branch"] = "231110" // fill with default values or we'll get null pointer exceptions
         }
     }
 
     // 自动读取客户端版本
     @JvmField
-    val CLIENT_VERSION = gitInfo["git.commit.id.abbrev"]?.let { "cn-$it" } ?: "unknown"
+    val CLIENT_VERSION = gitInfo["git.commit.id.abbrev"]?.let { "cn-$it" } ?: "5.2.1"
 
     @JvmField
-    val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
+    val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "5.2.1").let {
         if (it == "main") "CHINA" else it
     }
 

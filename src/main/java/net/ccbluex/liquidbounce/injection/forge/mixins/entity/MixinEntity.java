@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
@@ -183,7 +184,12 @@ public abstract class MixinEntity {
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
+        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+        //alert("Strafe: " + strafe + " Forward: " + forward + " Factor: " + friction + " DoFix: " + strafeFix.getDoFix());
         LiquidBounce.eventManager.callEvent(strafeEvent);
+        if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
+            strafeFix.runStrafeFixLoop(strafeFix.getSilentFix(), strafeEvent);
+        }
 
         if (strafeEvent.isCancelled())
             callbackInfo.cancel();

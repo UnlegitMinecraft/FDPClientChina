@@ -188,13 +188,23 @@ class NoSlow : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(event: MotionEvent) {
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
                 if(modeValue.equals("GrimAC")) {
-                    PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
-                    PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    if (event.eventState == EventState.PRE) {
+                        PacketUtils.sendPacketNoEvent(
+                                C07PacketPlayerDigging(
+                                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                        BlockPos.ORIGIN,
+                                        EnumFacing.DOWN
+                                )
+                        )
+                    }
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                    }
                 } else {
                     PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
                 }

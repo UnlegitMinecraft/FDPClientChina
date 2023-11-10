@@ -28,6 +28,8 @@ class TargetStrafe : Module() {
     private val onlySpeedValue = BoolValue("OnlySpeed", true)
     private val onlyflyValue = BoolValue("keyFly", false)
     private var direction = -1
+    var doStrafe = false
+    var targetEntity : EntityLivingBase?=null
     /**
      *
      * @param event Render3DEvent
@@ -55,24 +57,24 @@ class TargetStrafe : Module() {
                 GL11.glLineWidth(1.0f)
                 GL11.glBegin(3)
                 val x =
-                    target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX -LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                        target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX -LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                 val y =
-                    LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY -LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                        LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY -LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
                 val z =
-                    LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ -LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                        LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ -LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..359) {
                     val rainbow = Color(
-                        Color.HSBtoRGB(
-                            ((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)) % 1.0f).toFloat(),
-                            0.7f,
-                            1.0f
-                        )
+                            Color.HSBtoRGB(
+                                    ((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)) % 1.0f).toFloat(),
+                                    0.7f,
+                                    1.0f
+                            )
                     )
                     GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
                     GL11.glVertex3d(
-                        x + radiusValue.get() * cos(i * 6.283185307179586 / 45.0),
-                        y,
-                        z + radiusValue.get() * sin(i * 6.283185307179586 / 45.0)
+                            x + radiusValue.get() * cos(i * 6.283185307179586 / 45.0),
+                            y,
+                            z + radiusValue.get() * sin(i * 6.283185307179586 / 45.0)
                     )
                 }
                 GL11.glEnd()
@@ -96,82 +98,82 @@ class TargetStrafe : Module() {
                 GL11.glLineWidth(1.0f)
                 GL11.glBegin(3)
                 val x =
-                    LiquidBounce.combatManager.target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX -LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                        LiquidBounce.combatManager.target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX -LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                 val y =
-                    LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY -LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                        LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY -LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
                 val z =
-                    LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ -LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                        LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ -LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..10) {
                     counter[0] = counter[0] + 1
                     val rainbow = Color(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                     //final Color rainbow = new Color(Color.HSBtoRGB((float) ((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)) % 1.0f), 0.7f, 1.0f));
                     GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
                     if (rad < 0.8 && rad > 0.0) GL11.glVertex3d(
-                        x + rad * cos(i * 6.283185307179586 / 3.0),
-                        y,
-                        z + rad * sin(i * 6.283185307179586 / 3.0)
+                            x + rad * cos(i * 6.283185307179586 / 3.0),
+                            y,
+                            z + rad * sin(i * 6.283185307179586 / 3.0)
                     )
                     if (rad < 1.5 && rad > 0.7) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 4.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 4.0)
+                                x + rad * cos(i * 6.283185307179586 / 4.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 4.0)
                         )
                     }
                     if (rad < 2.0 && rad > 1.4) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 5.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 5.0)
+                                x + rad * cos(i * 6.283185307179586 / 5.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 5.0)
                         )
                     }
                     if (rad < 2.4 && rad > 1.9) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 6.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 6.0)
+                                x + rad * cos(i * 6.283185307179586 / 6.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 6.0)
                         )
                     }
                     if (rad < 2.7 && rad > 2.3) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 7.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 7.0)
+                                x + rad * cos(i * 6.283185307179586 / 7.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 7.0)
                         )
                     }
                     if (rad < 6.0 && rad > 2.6) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 8.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 8.0)
+                                x + rad * cos(i * 6.283185307179586 / 8.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 8.0)
                         )
                     }
                     if (rad < 7.0 && rad > 5.9) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 9.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 9.0)
+                                x + rad * cos(i * 6.283185307179586 / 9.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 9.0)
                         )
                     }
                     if (rad < 11.0) if (rad > 6.9) {
                         counter[0] = counter[0] + 1
                         RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
-                            x + rad * cos(i * 6.283185307179586 / 10.0),
-                            y,
-                            z + rad * sin(i * 6.283185307179586 / 10.0)
+                                x + rad * cos(i * 6.283185307179586 / 10.0),
+                                y,
+                                z + rad * sin(i * 6.283185307179586 / 10.0)
                         )
                     }
                 }
@@ -183,6 +185,10 @@ class TargetStrafe : Module() {
                 GL11.glPopMatrix()
             }
         }
+    }
+
+    fun toggleStrafe(): Boolean {
+        return targetEntity != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
     }
 
     /**
@@ -210,27 +216,27 @@ class TargetStrafe : Module() {
 
         if (targetStrafe > 0) {
             if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
-                    LiquidBounce.combatManager.target!!
-                ) < radiusValue.get()
+                            LiquidBounce.combatManager.target!!
+                    ) < radiusValue.get()
             ) yaw += -rotAssist
             mathStrafe += -moveAssist.toFloat()
         } else if (targetStrafe < 0) {
             if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
-                    LiquidBounce.combatManager.target!!
-                ) < radiusValue.get()
+                            LiquidBounce.combatManager.target!!
+                    ) < radiusValue.get()
             ) yaw += rotAssist
             mathStrafe += moveAssist.toFloat()
         }
 
         val doSomeMath = doubleArrayOf(
-            cos(Math.toRadians((yaw + 90f + mathStrafe).toDouble())),
-            sin(Math.toRadians((yaw + 90f + mathStrafe).toDouble()))
+                cos(Math.toRadians((yaw + 90f + mathStrafe).toDouble())),
+                sin(Math.toRadians((yaw + 90f + mathStrafe).toDouble()))
         )
         val moveSpeed = sqrt(event.x.pow(2.0) + event.z.pow(2.0))
 
         val asLast = doubleArrayOf(
-            moveSpeed * doSomeMath[0],
-            moveSpeed * doSomeMath[1]
+                moveSpeed * doSomeMath[0],
+                moveSpeed * doSomeMath[1]
         )
 
         event.x = asLast[0]
@@ -269,9 +275,9 @@ class TargetStrafe : Module() {
 
     private fun getStrafeDistance(target: EntityLivingBase): Float {
         return (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get()).coerceAtLeast(
-            mc.thePlayer.getDistanceToEntity(
-                target
-            ) - (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get() / (radiusValue.get() * 2))
+                mc.thePlayer.getDistanceToEntity(
+                        target
+                ) - (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get() / (radiusValue.get() * 2))
         )
     }
 

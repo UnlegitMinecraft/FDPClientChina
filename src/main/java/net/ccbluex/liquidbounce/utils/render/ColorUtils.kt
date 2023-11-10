@@ -34,6 +34,13 @@ object ColorUtils {
         }
     }
 
+
+    @JvmStatic
+    fun StaticRainbow(speed: Int, index: Int): Color {
+        var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
+        val hue = angle / 360f
+        return Color.getHSBColor(if ((360.0.also { (angle).toInt() } / 360.0).toFloat().toDouble() < 0.5) -(angle / 360.0).toFloat() else (angle / 360.0).toFloat(), 0.5f, 1.0f)
+    }
     fun stripColor(input: String): String {
         return COLOR_PATTERN.matcher(input).replaceAll("")
     }
@@ -119,17 +126,22 @@ object ColorUtils {
     }
 
     fun hslRainbow(
-        index: Int,
-        lowest: Float = HUD.rainbowStartValue.get(),
-        bigest: Float = HUD.rainbowStopValue.get(),
-        indexOffset: Int = 300,
-        timeSplit: Int = HUD.rainbowSpeedValue.get(),
-        saturation: Float = HUD.rainbowSaturationValue.get(),
-        brightness: Float = HUD.rainbowBrightnessValue.get()
+            index: Int,
+            lowest: Float = HUD.rainbowStartValue.get(),
+            bigest: Float = HUD.rainbowStopValue.get(),
+            indexOffset: Int = 300,
+            timeSplit: Int = HUD.rainbowSpeedValue.get(),
+            saturation: Float = HUD.rainbowSaturationValue.get(),
+            brightness: Float = HUD.rainbowBrightnessValue.get()
     ): Color {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
 
+    fun getColor(hueoffset: Float, saturation: Float, brightness: Float): Int {
+        val speed = 4500f
+        val hue = System.currentTimeMillis() % speed.toInt() / speed
+        return Color.HSBtoRGB(hue - hueoffset / 54, saturation, brightness)
+    }
     fun rainbow(): Color {
         return Color(ColorManager.astolfoRainbow(0,0,0))
     }
@@ -164,18 +176,18 @@ object ColorUtils {
         return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0) <0.5) { -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
     }
 
-    
+
     fun TwoRainbow(offset: Long, alpha: Float): Color {
         val color = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
         return Color(color.red / 255.0F * 1.0F, color.green / 255.0F * 1.0F, color.blue / 255.0f * 1, color.alpha / 255.0f)
-    
+
     }
 
     fun fade(color: Color, index: Int, count: Int): Color {
         val hsb = FloatArray(3)
         Color.RGBtoHSB(color.red, color.green, color.blue, hsb)
         var brightness =
-            abs(((System.currentTimeMillis() % 2000L).toFloat() / 1000.0f + index.toFloat() / count.toFloat() * 2.0f) % 2.0f - 1.0f)
+                abs(((System.currentTimeMillis() % 2000L).toFloat() / 1000.0f + index.toFloat() / count.toFloat() * 2.0f) % 2.0f - 1.0f)
         brightness = 0.5f + 0.5f * brightness
         hsb[2] = brightness % 2.0f
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))

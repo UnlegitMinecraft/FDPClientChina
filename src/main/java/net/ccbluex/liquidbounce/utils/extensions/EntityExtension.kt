@@ -32,6 +32,12 @@ fun Entity.getDistanceToEntityBox(entity: Entity): Double {
     return sqrt(xDist.pow(2) + yDist.pow(2) + zDist.pow(2))
 }
 
+val Entity.hitBox: AxisAlignedBB
+    get() {
+        val borderSize = collisionBorderSize.toDouble()
+        return entityBoundingBox.expand(borderSize, borderSize, borderSize)
+    }
+
 fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
     val origin = doubleArrayOf(eye.xCoord, eye.yCoord, eye.zCoord)
     val destMins = doubleArrayOf(box.minX, box.minY, box.minZ)

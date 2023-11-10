@@ -56,8 +56,8 @@ class Sprint : Module() {
                 !(mc.thePlayer.foodStats.foodLevel > 6.0f || mc.thePlayer.capabilities.allowFlying) ||
                 (useItemValue.get() && mc.thePlayer.isUsingItem) ||
                 (checkServerSide.get() && (mc.thePlayer.onGround || !checkServerSideGround.get()) &&
-                !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
-                RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)) {
+                        !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
+                        RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)) {
             mc.thePlayer.isSprinting = false
             return
         }
