@@ -33,7 +33,7 @@ import java.util.*
 
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
-    private val girl: Int
+    private val astolfo: Int
     private var openGLWarning1: String
     private var openGLWarning2: String? = null
     private var openGLWarningLink: String? = null
@@ -61,7 +61,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 }
             }
         }
-        girl = nextInt(0, 7)
+        astolfo = nextInt(0, 9)
         updateCounter = RANDOM.nextFloat()
         openGLWarning1 = ""
         if (!GLContext.getCapabilities().OpenGL20 && !OpenGlHelper.areShadersSupported()) {
@@ -262,7 +262,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         var imageX: Int
         var imageY: Int
 
-        when (girl) {
+        when (astolfo) {
             0 -> {
                 imageX = imageWidth[0]
                 imageY = imageHeight[0]
@@ -303,13 +303,23 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 imageY = imageHeight[0]
             }
 
+            8 -> {
+                imageX = imageWidth[0]
+                imageY = imageHeight[0]
+            }
+
+            9 -> {
+                imageX = imageWidth[0]
+                imageY = imageHeight[0]
+            }
+
             else -> {
                 imageX = 0
                 imageY = 0
             }
         }
 
-        RenderUtils.drawmage(ResourceLocation("fdpclient/imgs/$girl.png"), width - imageX / 3, height - imageY / 3, imageX / 3, imageY / 3, 0.5f)
+        RenderUtils.drawmage(ResourceLocation("fdpclient/astolfos/$astolfo.png"), width - imageX / 3, height - imageY / 3, imageX / 3, imageY / 3, 0.5f)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
 
 
