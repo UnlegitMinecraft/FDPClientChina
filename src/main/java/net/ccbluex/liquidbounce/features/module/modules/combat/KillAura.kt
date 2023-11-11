@@ -673,6 +673,13 @@ object KillAura : Module() {
             }
 
             var distance = mc.thePlayer.getDistanceToEntityBox(entity)
+            if (Backtrack.state) {
+                val trackedDistance = Backtrack.getNearestTrackedDistance(entity)
+
+                if (distance > trackedDistance) {
+                    distance = trackedDistance
+                }
+            }
 
             val entityFov = RotationUtils.getRotationDifference(entity)
 
@@ -704,6 +711,24 @@ object KillAura : Module() {
 
         // Find best target
         for (entity in discoveredTargets) {
+            // Update rotations to current target
+            if (!updateRotations(entity)) {
+                var success = false
+                Backtrack.loopThroughBacktrackData(entity) {
+                    if (updateRotations(entity)) {
+                        success = true
+                        return@loopThroughBacktrackData true
+                    }
+
+                    return@loopThroughBacktrackData false
+                }
+
+                if (!success) {
+                    // when failed then try another target
+                    continue
+                }
+            }
+
             // Set target to current entity
             if (mc.thePlayer.getDistanceToEntityBox(entity) < rangeValue.get()) {
                 currentTarget = entity

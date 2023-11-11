@@ -36,7 +36,7 @@ class ModuleManager : Listenable {
         ClientUtils.logInfo("[ModuleManager] Loading modules...")
 
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.modules", Module::class.java)
-            .forEach(this::registerModule)
+                .forEach(this::registerModule)
 
         modules.forEach { it.onInitialize() }
 
