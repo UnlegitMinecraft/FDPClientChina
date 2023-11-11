@@ -203,6 +203,7 @@ class NoSlow : Module() {
                         )
                     }
                     if (event.eventState == EventState.POST) {
+                        PacketUtils.sendPacketNoEvent(C0FPacketConfirmTransaction())
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                     }
                 } else {
