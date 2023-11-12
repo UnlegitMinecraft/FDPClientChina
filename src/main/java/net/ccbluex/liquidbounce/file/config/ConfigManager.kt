@@ -28,7 +28,7 @@ class ConfigManager {
 
     init {
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.sections", ConfigSection::class.java)
-            .forEach(this::registerSection)
+                .forEach(this::registerSection)
 
         // add an interval timer to save the config every 30 seconds
         Timer().schedule(30000, 30000) {

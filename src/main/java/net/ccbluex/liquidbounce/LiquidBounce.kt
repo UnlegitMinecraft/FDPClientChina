@@ -111,23 +111,23 @@ object LiquidBounce {
     val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>
         get() = ClassUtils.resolvePackage(
-            "${LaunchOption::class.java.`package`.name}.options",
-            LaunchOption::class.java
+                "${LaunchOption::class.java.`package`.name}.options",
+                LaunchOption::class.java
         )
-            .filter {
-                val annotation = it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
-                if (annotation != null) {
-                    return@filter annotation.filters.toMutableList() == launchFilters
+                .filter {
+                    val annotation = it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
+                    if (annotation != null) {
+                        return@filter annotation.filters.toMutableList() == launchFilters
+                    }
+                    false
                 }
-                false
-            }
-            .map {
-                try {
-                    it.newInstance()
-                } catch (e: IllegalAccessException) {
-                    ClassUtils.getObjectInstance(it) as LaunchOption
-                }
-            }.toTypedArray()
+                .map {
+                    try {
+                        it.newInstance()
+                    } catch (e: IllegalAccessException) {
+                        ClassUtils.getObjectInstance(it) as LaunchOption
+                    }
+                }.toTypedArray()
 
     /**
      * Execute if client will be started
@@ -157,10 +157,10 @@ object LiquidBounce {
         commandManager = CommandManager()
 
         fileManager.loadConfigs(
-            fileManager.accountsConfig,
-            fileManager.friendsConfig,
-            fileManager.specialConfig,
-            fileManager.subscriptsConfig
+                fileManager.accountsConfig,
+                fileManager.friendsConfig,
+                fileManager.specialConfig,
+                fileManager.subscriptsConfig
         )
         // Load client fonts
         Fonts.loadFonts()
@@ -239,7 +239,7 @@ object LiquidBounce {
             val get = HttpUtils.get("https://api.github.com/repos/UnlegitMinecraft/FDPClientChina/commits/${gitInfo["git.branch"]}")
 
             val jsonObj = JsonParser()
-                .parse(get).asJsonObject
+                    .parse(get).asJsonObject
 
             latest = jsonObj.get("sha").asString.substring(0, 7)
 

@@ -57,7 +57,7 @@ import java.awt.event.InputEvent.BUTTON3_DOWN_MASK
 import java.util.*
 import kotlin.math.*
 
-@ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G)
+@ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 object KillAura : Module() {
     /**
      * OPTIONS
