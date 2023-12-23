@@ -94,12 +94,6 @@ object KillAura : Module() {
     // Range
     val rangeValue = FloatValue("Range", 3.7f, 0f, 8f).displayable { attackDisplay.get() }
 
-    private val groundRangeValue = FloatValue("GroundRange", 3.2f, 0f, 8f).displayable { HuaYuTingRange.get() && airBypass.get() }
-
-    private val airRangeValue = FloatValue("AirRange", 3.1f, 0f, 8f).displayable { HuaYuTingRange.get() && airBypass.get() }
-
-    private val noMoveRangeValue = FloatValue("NoMoveRange", 3.0f, 0f, 8f).displayable { HuaYuTingRange.get() && noMoveRangeFix.get() }
-
     private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = rangeValue.get()
@@ -115,11 +109,6 @@ object KillAura : Module() {
     private val noFlyValue = BoolValue("NoFly", false).displayable { attackDisplay.get() }
     private val noEat = BoolValue("NoEat", true).displayable { attackDisplay.get() }
     private val noBlocking = BoolValue("NoBlocking", false).displayable { attackDisplay.get() }
-
-    private val HuaYuTingRange = BoolValue("HuaYuTingRange Options:", true)
-    private val airBypass = BoolValue("AirRange",true).displayable { HuaYuTingRange.get() }
-    private val noMoveRangeFix = BoolValue("NoMoveRangeFix",true).displayable { HuaYuTingRange.get() }
-    private val stopSprintAir = BoolValue("StopSprintOnAir",true).displayable { HuaYuTingRange.get() }
 
     // Bypass
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplay.get() }
@@ -386,13 +375,6 @@ object KillAura : Module() {
      */
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (stopSprintAir.get()) {
-            if (mc.thePlayer!!.onGround) {
-                keepSprintValue.set(true)
-            } else {
-                keepSprintValue.set(false)
-            }
-        }
         if (event.eventState == EventState.POST) {
             packetSent = false
         }
@@ -440,16 +422,6 @@ object KillAura : Module() {
      */
     @EventTarget
     fun onUpdate(ignoredEvent: UpdateEvent) {
-        if ((!noMoveRangeFix.get() || MovementUtils.isMoving()) && airBypass.get()) {
-            if (mc.thePlayer!!.onGround) {
-                if (rangeValue.get() != groundRangeValue.get()) rangeValue.set(groundRangeValue.get())
-            } else {
-                if (rangeValue.get() != airRangeValue.get()) rangeValue.set(airRangeValue.get())
-            }
-        }
-        if(!MovementUtils.isMoving() && noMoveRangeFix.get() && rangeValue.get() != noMoveRangeValue.get()) {
-            rangeValue.set(noMoveRangeValue.get())
-        }
         if (clickOnly.get() && !mc.gameSettings.keyBindAttack.isKeyDown) return
 
         if (cancelRun) {
