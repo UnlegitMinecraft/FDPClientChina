@@ -288,11 +288,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 imageY = imageHeight[0]
             }
 
-            5 -> {
-                imageX = imageWidth[0]
-                imageY = imageHeight[0]
-            }
-
             else -> {
                 imageX = 0
                 imageY = 0
