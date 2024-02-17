@@ -39,7 +39,6 @@ class Velocity : Module() {
     private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F)
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
-                                                      "Redesky1", "Redesky2",
                                                       "AAC5.2.0", "AAC5.2.0Combat",
                                                       "MatrixReduce", "MatrixSimple", "MatrixReverse",
                                                       "Reverse", "SmoothReverse",
@@ -65,10 +64,6 @@ class Velocity : Module() {
     private val legitStrafeValue = BoolValue("LegitStrafe", false).displayable { modeValue.equals("Legit") }
     private val legitFaceValue = BoolValue("LegitFace", true).displayable { modeValue.equals("Legit") }
 
-    private val rspAlwaysValue = BoolValue("RedeskyAlwaysReduce", true)
-        .displayable { modeValue.contains("RedeSky") }
-    private val rspDengerValue = BoolValue("RedeskyOnlyDanger", false)
-        .displayable { modeValue.contains("RedeSky") }
 
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val onlyCombatValue = BoolValue("OnlyCombat", false)
@@ -440,75 +435,6 @@ class Velocity : Module() {
 
                 "legit" -> {
                     pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
-                }
-
-                "redesky2" -> {
-                    if (packet.getMotionX() == 0 && packet.getMotionZ() == 0) { // ignore horizonal velocity
-                        return
-                    }
-
-                    val target = LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get() + 1) ?: return
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
-                    packet.motionX = 0
-                    packet.motionZ = 0
-                    for (i in 0..redeCount) {
-                        mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK))
-                        mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
-                    }
-                    if (redeCount> 12) redeCount -= 5
-                }
-
-                "redesky1" -> {
-                    if (packet.getMotionX() == 0 && packet.getMotionZ() == 0) { // ignore horizonal velocity
-                        return
-                    }
-
-                    if (rspDengerValue.get()) {
-                        val pos = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.motionX / 8000.0, packet.motionY / 8000.0, packet.motionZ / 8000.0, 0f, 0f, 0f, 0f).findCollision(60)
-                        if (pos != null && pos.y> (mc.thePlayer.posY - 7)) {
-                            return
-                        }
-                    }
-
-                    val target = LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get()) ?: return
-                    if (rspAlwaysValue.get()) {
-                        mc.thePlayer.motionX = 0.0
-                        mc.thePlayer.motionZ = 0.0
-                        // mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
-                        packet.motionX = 0
-                        packet.motionZ = 0
-                        // event.cancelEvent() better stuff
-                    }
-
-                    if (velocityCalcTimer.hasTimePassed(500)) {
-                        if (!rspAlwaysValue.get()) {
-                            mc.thePlayer.motionX = 0.0
-                            mc.thePlayer.motionZ = 0.0
-                            // mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
-                            packet.motionX = 0
-                            packet.motionZ = 0
-                        }
-                        val count = if (!velocityCalcTimer.hasTimePassed(800)) {
-                            8
-                        } else if (!velocityCalcTimer.hasTimePassed(1200)) {
-                            12
-                        } else {
-                            25
-                        }
-                        for (i in 0..count) {
-                            mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK))
-                            mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
-                        }
-                        velocityCalcTimer.reset()
-                    } else {
-                        packet.motionX = (packet.motionX * 0.6).toInt()
-                        packet.motionZ = (packet.motionZ * 0.6).toInt()
-                        for (i in 0..4) {
-                            mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK))
-                            mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
-                        }
-                    }
                 }
             }
         }
