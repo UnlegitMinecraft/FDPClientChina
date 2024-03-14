@@ -11,7 +11,6 @@ A free mixin-based injection hacked-client for Minecraft using Minecraft Forge b
 
 Website: https://FDPClient.club 
 Latest: [github-actions](https://github.com/UnlegitMinecraft/FDPClientChina/actions/workflows/build.yml?query=event%3Apush)    
-Discord: https://discord.gg/55x7TaHWXG  
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMinecraft/FDPClientChina/issues).
