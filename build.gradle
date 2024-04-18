@@ -12,10 +12,10 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url = "https://fdpclient.club/" }
-    maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
-    maven { url = "https://repo.viaversion.com" }
+    maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
     maven { url = "https://jitpack.io/" }
+    maven { url = "https://maven.minecraftforge.net/" }
 }
 
 version = "5.0.0"
@@ -42,15 +42,9 @@ minecraft {
 configurations {
     include
     implementation.extendsFrom(include)
-
-    external
-    compile.extendsFrom(external)
-
-    runtimeOnly.canBeResolved = true
 }
 
 dependencies {
-
     include 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
     include "com.google.zxing:core:3.5.0"
@@ -67,37 +61,27 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    include("me.friwi:jcefmaven:$jcef_version") {
-        exclude module: "commons-compress" // minecraft have a old version of this library
-        exclude module: "jogl-all" // we use lwjgl
-        exclude module: "gluegen-rt" // this is the library for joal
-    }
-    include("com.github.UnlegitMinecraft:FuckPCL:2.0") {
-        exclude module: "kotlin-stdlib-jdk8"
-        exclude module: "jna-platform"
-    }
-    include('com.jagrosh:DiscordIPC:0.4') {
-        exclude module: "gson"
-        exclude module: "log4j"
-    }
+
+    include "com.jagrosh:DiscordIPC:0.4"
 
     include("com.github.CCBlueX:Elixir:1.2.6") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }
 
-    include("com.github.zh79325:open-gif:1.0.4") {
-        exclude module: "slf4j-api"
-        exclude module: "logback-core"
-        exclude module: "logback-classic"
-        exclude module: "junit"
-    } // for read dynamic capes
+    include("com.github.UnlegitMinecraft:FuckPCL:2.0") {
+        exclude module: "kotlin-stdlib-jdk8"
+        exclude module: "jna-platform"
+    }
 
     include("com.github.UnlegitMinecraft:Astar3d:bec2291cf2") // pathfinding
 
-    // TheAltening
     include 'com.github.TheAltening:TheAltening4j:d0771f42d3'
-    include 'com.github.TheAltening:API-Java-AuthLib:-SNAPSHOT'
+    include 'com.github.TheAltening:API-Java-AuthLib:63a9702615'
+
+    include "org.apache.httpcomponents:httpmime:4.5.14"
+
+    include "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
     include fileTree(include: ["*.jar"], dir: "libs")
 }
@@ -105,14 +89,14 @@ dependencies {
 shadowJar {
     archiveClassifier.set("")
     configurations = [project.configurations.include]
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 
     // Exclusions
-    exclude "native-binaries/**"
     exclude "LICENSE.txt"
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
-    exclude "org/apache/**"
+    exclude "org/apache/log4j/**"
+    exclude "org/apache/commons/**"
     exclude "org/junit/**"
 }
 
@@ -146,7 +130,7 @@ jar {
             "ModSide": "CLIENT",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
-            "FMLAT": "fdpclient_at.cfg"
+            "FMLAT": "fdpclient_at.cfg",
     )
 
     enabled = false
