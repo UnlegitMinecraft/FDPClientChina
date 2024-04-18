@@ -163,28 +163,4 @@ reobf {
     }
 }
 
-jar.dependsOn("shadowJar")
-
-configurations {
-    compileClasspath {
-        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
-    }
-    include {
-        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
-    }
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = group
-            artifactId = archivesBaseName
-            version = version
-
-            from components.java
-        }
-    }
-}
-
-tasks.reobfShadowJar.mustRunAfter shadowJar
 tasks.reobfJar.dependsOn(shadowJar)
