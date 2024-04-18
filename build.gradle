@@ -5,16 +5,19 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
-    id "com.gorylenko.gradle-git-properties" version "2.4.0"
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
+
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
-    maven { url = "https://jitpack.io/" }
     maven { url = "https://fdpclient.club/" }
-    maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
+    maven { url = "https://maven.minecraftforge.net/" }
+    maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+    maven { url = "https://repo.viaversion.com" }
+    maven { url = "https://jitpack.io/" }
 }
+
 version = "5.0.0"
 group = "org.unlegitmc.fdp"
 archivesBaseName = "FDPClient"
@@ -33,15 +36,23 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx1024m -Xms1024m", "-Ddev-mode"]
+    clientJvmArgs = ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx2048m", "-Xms2048m", "-Ddev-mode"]
 }
 
 configurations {
     include
     implementation.extendsFrom(include)
+
+    external
+    compile.extendsFrom(external)
+
+    runtimeOnly.canBeResolved = true
 }
 
 dependencies {
+
+    include 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
     include "com.google.zxing:core:3.5.0"
     include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
@@ -65,8 +76,12 @@ dependencies {
         exclude module: "kotlin-stdlib-jdk8"
         exclude module: "jna-platform"
     }
-    include("com.jagrosh:DiscordIPC:0.4")
-    include("com.github.CCBlueX:Elixir:1.2.4") {
+    include('com.jagrosh:DiscordIPC:0.4') {
+        exclude module: "gson"
+        exclude module: "log4j"
+    }
+
+    include("com.github.CCBlueX:Elixir:1.2.6") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }
@@ -90,16 +105,13 @@ dependencies {
 shadowJar {
     archiveClassifier.set("")
     configurations = [project.configurations.include]
-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    // Ultralight native files are going to be downloaded from our cloud
+    // Exclusions
     exclude "native-binaries/**"
-
     exclude "LICENSE.txt"
-
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
-
     exclude "org/apache/**"
     exclude "org/junit/**"
 }
@@ -115,10 +127,9 @@ processResources {
     rename "(.+_at.cfg)", "META-INF/\$1"
 }
 
-task moveResources {
+tasks.register('moveResources') {
     doLast {
-        ant.move file: "${buildDir}/resources/main",
-                todir: "${buildDir}/classes/java"
+        "${buildDir}/classes/java"
     }
 }
 
@@ -134,7 +145,7 @@ jar {
             "ModSide": "CLIENT",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
-            "FMLAT": "fdpclient_at.cfg",
+            "FMLAT": "fdpclient_at.cfg"
     )
 
     enabled = false
@@ -152,4 +163,28 @@ reobf {
     }
 }
 
+jar.dependsOn("shadowJar")
+
+configurations {
+    compileClasspath {
+        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+    }
+    include {
+        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = archivesBaseName
+            version = version
+
+            from components.java
+        }
+    }
+}
+
+tasks.reobfShadowJar.mustRunAfter shadowJar
 tasks.reobfJar.dependsOn(shadowJar)
