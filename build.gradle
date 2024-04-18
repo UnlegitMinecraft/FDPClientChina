@@ -5,7 +5,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
-    id "com.gorylenko.gradle-git-properties" version "2.4.0"
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
 repositories {
     mavenLocal()
@@ -14,7 +14,9 @@ repositories {
     maven { url = "https://jitpack.io/" }
     maven { url = "https://fdpclient.club/" }
     maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
+    maven { url = "https://maven.minecraftforge.net/" }
 }
+
 version = "5.0.0"
 group = "org.unlegitmc.fdp"
 archivesBaseName = "FDPClient"
@@ -33,7 +35,7 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx1024m -Xms1024m", "-Ddev-mode"]
+    clientJvmArgs = ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx2048m", "-Xms2048m", "-Ddev-mode"]
 }
 
 configurations {
