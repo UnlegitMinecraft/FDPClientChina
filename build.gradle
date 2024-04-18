@@ -127,9 +127,10 @@ processResources {
     rename "(.+_at.cfg)", "META-INF/\$1"
 }
 
-tasks.register('moveResources') {
+task moveResources {
     doLast {
-        "${buildDir}/classes/java"
+        ant.move file: "${buildDir}/resources/main",
+                todir: "${buildDir}/classes/java"
     }
 }
 
