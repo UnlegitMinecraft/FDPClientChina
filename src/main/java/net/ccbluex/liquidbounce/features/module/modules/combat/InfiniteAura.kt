@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -23,8 +24,12 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.PlayerCapabilities
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.client.C0APacketAnimation
+import net.minecraft.network.play.client.C13PacketPlayerAbilities
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
@@ -34,12 +39,15 @@ import kotlin.concurrent.thread
 @ModuleInfo(name = "InfiniteAura", category = ModuleCategory.COMBAT)
 class InfiniteAura : Module() {
 
+    private val packetValue = ListValue("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
+    private val packetBack = BoolValue("DoTeleportBackPacket", false)
     private val modeValue = ListValue("Mode", arrayOf("Aura", "Click"), "Aura")
     private val targetsValue = IntegerValue("Targets", 3, 1, 10).displayable { modeValue.equals("Aura") }
     private val cpsValue = IntegerValue("CPS", 1, 1, 10)
     private val distValue = IntegerValue("Distance", 30, 20, 100)
     private val moveDistanceValue = FloatValue("MoveDistance", 5F, 2F, 15F)
     private val noRegenValue = BoolValue("NoRegen", true)
+    private val noLagBackValue = BoolValue("NoLagback", true)
     private val swingValue = BoolValue("Swing", true).displayable { modeValue.equals("Aura") }
     private val pathRenderValue = BoolValue("PathRender", true)
     private val colorRedValue = IntegerValue("ColorRed", 0, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
@@ -123,25 +131,36 @@ class InfiniteAura : Module() {
         if(!force && lastDistance > 10) return false // pathfinding has failed
 
         path.forEach {
-            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord, it.yCoord, it.zCoord, true))
+            if (packetValue.equals("PacketPosition")) {
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord, it.yCoord, it.zCoord, true))
+            } else {
+                mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(it.xCoord,it.yCoord,it.zCoord,mc.thePlayer!!.rotationYaw,mc.thePlayer!!.rotationPitch,true))
+            }
             points.add(it)
         }
 
-        if(lastDistance > 3) {
+        if(lastDistance > 3 && packetBack.get()) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(entity.posX, entity.posY, entity.posZ, true))
         }
 
         if (swingValue.get()) {
             mc.thePlayer.swingItem()
+        } else {
+            mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
         mc.playerController.attackEntity(mc.thePlayer, entity)
 
         for (i in path.size - 1 downTo 0) {
             val vec = path[i]
-            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord, vec.yCoord, vec.zCoord, true))
+            if (packetValue.equals("PacketPosition")) {
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord, vec.yCoord, vec.zCoord, true))
+            } else {
+                mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(vec.xCoord,vec.yCoord,vec.zCoord,mc.thePlayer!!.rotationYaw,mc.thePlayer!!.rotationPitch,true))
+            }
         }
-        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
-
+        if (packetBack.get()) {
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+        }
         return true
     }
 
@@ -153,6 +172,19 @@ class InfiniteAura : Module() {
         val isMovePacket = (event.packet is C04PacketPlayerPosition || event.packet is C03PacketPlayer.C06PacketPlayerPosLook)
         if (noRegenValue.get() && event.packet is C03PacketPlayer && !isMovePacket) {
             event.cancelEvent()
+        }
+        if (noLagBackValue.get() && event.packet is S08PacketPlayerPosLook) {
+            val capabilities = PlayerCapabilities()
+            capabilities.allowFlying = true
+            mc.netHandler.addToSendQueue(C13PacketPlayerAbilities(capabilities)) // Packet C13
+
+            val x = event.packet.getX() - mc.thePlayer.posX
+            val y = event.packet.getY() - mc.thePlayer.posY
+            val z = event.packet.getZ() - mc.thePlayer.posZ
+            val diff = Math.sqrt(x * x + y * y + z * z)
+            event.cancelEvent() // cancel
+            PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(event.packet.getX(), event.packet.getY(), event.packet.getZ(), event.packet.getYaw(), event.packet.getPitch(), true))
+
         }
     }
 

@@ -11,8 +11,8 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import kotlin.random.Random
 
 @ModuleInfo(name = "Aimbot", category = ModuleCategory.COMBAT)
@@ -20,21 +20,30 @@ class Aimbot : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
     private val turnSpeedValue = FloatValue("TurnSpeed", 2F, 1F, 180F)
+    private val randomTurnValue = FloatValue("TurnSpeedRandomRate", 1.0F, 0F, 15F)
+    private val smoothValue = BoolValue("Smooth", false)
+    private val smoothAngleValue = IntegerValue("SmoothMinAngle", 30, 1, 180).displayable { smoothValue.get() }
     private val fovValue = FloatValue("FOV", 180F, 1F, 180F)
-    private val centerValue = BoolValue("Center", false)
+    private val rotMode = ListValue("RotationMode", arrayOf("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"), "HalfUp")
     private val lockValue = BoolValue("Lock", true)
     private val onClickValue = BoolValue("OnClick", false)
+    private val onClickDurationValue = IntegerValue("OnClickDuration", 500, 100, 1000).displayable { onClickValue.get() }
     private val jitterValue = BoolValue("Jitter", false)
+    private val randomJitterValue = FloatValue("JitterRandomRate", 1.0F, 0F, 5.0F).displayable { jitterValue.get() }
+    private val breakStopValue = BoolValue("NoBreak", true)
 
     private val clickTimer = MSTimer()
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
+        if (breakStopValue.get() && mc.playerController.curBlockDamageMP == 0F) {
+            return
+        }
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
             clickTimer.reset()
         }
 
-        if (onClickValue.get() && clickTimer.hasTimePassed(500L)) {
+        if (onClickValue.get() && clickTimer.hasTimePassed(onClickDurationValue.get().toLong())) {
             return
         }
 
@@ -50,15 +59,21 @@ class Aimbot : Module() {
             return
         }
 
+        val calcBaseSpeed = turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()
+        val angleDiff = RotationUtils.getRotationDifference(entity)
+        val calcPrecent = if (angleDiff >= smoothAngleValue.get() || !smoothValue.get()) { 1.0 } else { angleDiff / smoothAngleValue.get() }
+
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
-            if (centerValue.get()) {
-                RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox), true)
-            } else {
-                RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true,
-                    false).rotation
-            },
-            (turnSpeedValue.get() + Math.random()).toFloat()
+            (RotationUtils.calculateCenter(
+                rotMode.get(),
+                "Horizontal",
+                0.1,
+                entity.hitBox,
+                false,
+                true)
+                    )!!.rotation,
+            (calcBaseSpeed * calcPrecent).toFloat()
         )
 
         rotation.toPlayer(mc.thePlayer)
@@ -70,11 +85,11 @@ class Aimbot : Module() {
             val pitchNegative = Random.nextBoolean()
 
             if (yaw) {
-                mc.thePlayer.rotationYaw += if (yawNegative) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
+                mc.thePlayer.rotationYaw += if (yawNegative) -RandomUtils.nextFloat(0F, randomJitterValue.get()) else RandomUtils.nextFloat(0F, randomJitterValue.get())
             }
 
             if (pitch) {
-                mc.thePlayer.rotationPitch += if (pitchNegative) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
+                mc.thePlayer.rotationPitch += if (pitchNegative) -RandomUtils.nextFloat(0F, randomJitterValue.get()) else RandomUtils.nextFloat(0F, randomJitterValue.get())
                 if (mc.thePlayer.rotationPitch > 90) {
                     mc.thePlayer.rotationPitch = 90F
                 } else if (mc.thePlayer.rotationPitch < -90) {

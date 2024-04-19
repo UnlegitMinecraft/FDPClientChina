@@ -1,4 +1,3 @@
-
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -7,7 +6,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -21,24 +19,40 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.util.*
 import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
-class NoSlow : Module() {
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan", "GrimAC"), "Vanilla")
-    private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
-    private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
-    private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
-    private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F)
-    private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F)
-    private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
+object NoSlow : Module() {
+
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Medusa", "OldIntave", "GrimAC", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace"), "Vanilla")
+    private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
+    private val onlyGround = BoolValue("OnlyGround", false)
+    private val onlyMove = BoolValue("OnlyMove", false)
+
+    private val blockModifyValue = BoolValue("Blocking", true)
+    private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
+    private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
+    private val consumeModifyValue = BoolValue("Consume", true)
+    private val consumePacketValue = ListValue("ConsumePacket", arrayOf("None", "AAC5", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Glitch", "Packet"), "None").displayable { consumeModifyValue.get() }
+    private val consumeTimingValue = ListValue("ConsumeTiming", arrayOf("Pre", "Post"), "Pre").displayable { consumeModifyValue.get() }
+    private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { consumeModifyValue.get() }
+    private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { consumeModifyValue.get() }
+    private val bowModifyValue = BoolValue("Bow", true)
+    private val bowPacketValue = ListValue("BowPacket", arrayOf("None", "AAC5", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Glitch", "Packet"), "None").displayable { bowModifyValue.get() }
+    private val bowTimingValue = ListValue("BowTiming", arrayOf("Pre", "Post"), "Pre").displayable { bowModifyValue.get() }
+    private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { bowModifyValue.get() }
+    private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { bowModifyValue.get() }
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     // Soulsand
-    val soulsandValue = BoolValue("Soulsand", false)
+    val soulsandValue = BoolValue("SoulSand", true)
+    private val c07Value = BoolValue("AAC4-C07", true).displayable { modeValue.equals("AAC4") }
+    private val c08Value = BoolValue("AAC4-C08", true).displayable { modeValue.equals("AAC4") }
+    private val groundValue = BoolValue("AAC4-OnGround", true).displayable { modeValue.equals("AAC4") }
     // Slowdown on teleport
     private val teleportValue = BoolValue("Teleport", false)
     private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }
@@ -46,18 +60,17 @@ class NoSlow : Module() {
     private val teleportCustomSpeedValue = FloatValue("Teleport-CustomSpeed", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
     private val teleportCustomYValue = BoolValue("Teleport-CustomY", false).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
     private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
-    private val alert1Value = BoolValue("updateAlert1", true).displayable { false }
 
     private var pendingFlagApplyPacket = false
     private var lastMotionX = 0.0
     private var lastMotionY = 0.0
     private var lastMotionZ = 0.0
     private val msTimer = MSTimer()
-    private val alertTimer = MSTimer()
     private var sendBuf = false
     private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
     private var nextTemp = false
     private var waitC03 = false
+    private var sendPacket = false
     private var lastBlockingStat = false
 
     override fun onDisable() {
@@ -103,48 +116,104 @@ class NoSlow : Module() {
         }
     }
 
+    private fun sendPacket2(packetType: String) {
+        when (packetType.lowercase()) {
+            "aac5" -> {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+            }
+            "spamitemchange" -> {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            }
+            "spamplace" -> {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+            }
+            "spamemptyplace" -> {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement())
+            }
+            "glitch" -> {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            }
+            "packet" -> {
+                null
+            }
+        }
+    }
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (alertTimer.hasTimePassed(10000) && alert1Value.get() && (modeValue.equals("Matrix") || modeValue.equals("Vulcan"))) {
-            alertTimer.reset()
-            ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aPlease notice that Vulcan/Matrix NoSlow §cDO NOT §asupport FakeLag Disabler!")
-            ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aType .noslow updateAlert1 to disable this notice!")
-        }
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
-        if (!MovementUtils.isMoving()) {
+        if (mc.thePlayer == null || mc.theWorld == null)
+            return
+
+        if ((!MovementUtils.isMoving() && onlyMove.get()) || (onlyGround.get() && !mc.thePlayer.onGround)) {
             return
         }
 
-//        val heldItem = mc.thePlayer.heldItem
-        if (modeValue.get().lowercase() == "aac5") {
-            if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
+        val heldItem = mc.thePlayer.heldItem?.item
+        if (consumeModifyValue.get() && mc.thePlayer.isUsingItem && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) {
+            if ((consumeTimingValue.equals("Pre") && event.eventState == EventState.PRE) || (consumeTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+                sendPacket2(consumePacketValue.get())
             }
-            return
         }
-        if (modeValue.get().lowercase() != "aac5") {
-            if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
-                return
+
+        if (bowModifyValue.get() && mc.thePlayer.isUsingItem && heldItem is ItemBow) {
+            if ((bowTimingValue.equals("Pre") && event.eventState == EventState.PRE) || (bowTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+                sendPacket2(bowPacketValue.get())
             }
+        }
+
+        if ((blockModifyValue.get() && (mc.thePlayer.isBlocking || killAura.blockingStatus) && heldItem is ItemSword)
+            || (bowModifyValue.get() && mc.thePlayer.isUsingItem && heldItem is ItemBow && bowPacketValue.equals("Packet"))
+            || (consumeModifyValue.get() && mc.thePlayer.isUsingItem && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk) && consumePacketValue.equals("Packet") )
+        ) {
             when (modeValue.get().lowercase()) {
                 "liquidbounce" -> {
-                    sendPacket(event, true, true, false, 0, false)
+                    sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
                 "aac" -> {
                     if (mc.thePlayer.ticksExisted % 3 == 0) {
-                        sendPacket(event, true, false, false, 0, false)
+                        sendPacket(event,
+                            sendC07 = true,
+                            sendC08 = false,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = false
+                        )
                     } else if (mc.thePlayer.ticksExisted % 3 == 1) {
-                        sendPacket(event, false, true, false, 0, false)
+                        sendPacket(event,
+                            sendC07 = false,
+                            sendC08 = true,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = false
+                        )
+                    }
+                }
+
+                "aac4" -> {
+                    sendPacket(event, c07Value.get(), c08Value.get(), true, 80, groundValue.get())
+                }
+
+                "aac5" -> {
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
                     }
                 }
 
                 "custom" -> {
-                    sendPacket(event, true, true, true, customDelayValue.get().toLong(), customOnGround.get())
+                    sendPacket(event,
+                        sendC07 = true,
+                        sendC08 = true,
+                        delay = true,
+                        delayValue = customDelayValue.get().toLong(),
+                        onGround = customOnGround.get()
+                    )
                 }
 
                 "ncp" -> {
-                    sendPacket(event, true, true, false, 0, false)
+                    sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
                 "watchdog2" -> {
@@ -157,17 +226,53 @@ class NoSlow : Module() {
 
                 "watchdog" -> {
                     if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        sendPacket(event, true, false, true, 50, true)
+                        sendPacket(event, true, sendC08 = false, delay = true, delayValue = 50, onGround = true)
                     } else {
-                        sendPacket(event, false, true, false, 0, true, true)
+                        sendPacket(event,
+                            sendC07 = false,
+                            sendC08 = true,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = true,
+                            watchDog = true
+                        )
                     }
+                }
+                "oldintave" -> {
+                    if(mc.thePlayer.isUsingItem){
+                        if (event.eventState == EventState.PRE){
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        }
+                        if(event.eventState == EventState.POST){
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+                        }
+                    }
+                }
+                "switchitem" -> {
+                    PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem  % 8 + 1))
+                    PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
+                "hypixelnew" -> {
+                    if (getEmptySlot() != -1 && event.eventState == EventState.PRE && mc.thePlayer.ticksExisted % 2 == 0) {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventoryContainer.getSlot(getEmptySlot()).stack, 0f, 0f, 0f))
+                    }
+                }
+                "spamitemchange" -> {
+                    if (event.eventState == EventState.PRE)
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
+                "spamplace" -> {
+                    if (event.eventState == EventState.PRE)
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                 }
             }
         }
     }
-
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
+        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
+            return
         val heldItem = mc.thePlayer.heldItem?.item
 
         event.forward = getMultiplier(heldItem, true)
@@ -176,40 +281,35 @@ class NoSlow : Module() {
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
         is ItemFood, is ItemPotion, is ItemBucketMilk -> {
-            if (isForward) this.consumeForwardMultiplier.get() else this.consumeStrafeMultiplier.get()
+            if (consumeModifyValue.get())
+                if (isForward) this.consumeForwardMultiplier.get() else this.consumeStrafeMultiplier.get() else 0.2F
         }
         is ItemSword -> {
-            if (isForward) this.blockForwardMultiplier.get() else this.blockStrafeMultiplier.get()
+            if (blockModifyValue.get())
+                if (isForward) this.blockForwardMultiplier.get() else this.blockStrafeMultiplier.get() else 0.2F
         }
         is ItemBow -> {
-            if (isForward) this.bowForwardMultiplier.get() else this.bowStrafeMultiplier.get()
+            if (bowModifyValue.get())
+                if (isForward) this.bowForwardMultiplier.get() else this.bowStrafeMultiplier.get() else 0.2F
         }
         else -> 0.2F
     }
 
     @EventTarget
-    fun onUpdate(event: MotionEvent) {
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
+    fun onUpdate(event: UpdateEvent) {
+        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
+            return
+
+        if((modeValue.equals("Matrix")  || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
                 if(modeValue.equals("GrimAC")) {
-                    if (event.eventState == EventState.PRE) {
-                        PacketUtils.sendPacketNoEvent(
-                                C07PacketPlayerDigging(
-                                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                                        BlockPos.ORIGIN,
-                                        EnumFacing.DOWN
-                                )
-                        )
-                    }
-                    if (event.eventState == EventState.POST) {
-                        PacketUtils.sendPacketNoEvent(C0FPacketConfirmTransaction())
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-                    }
+                    PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
+                    PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 } else {
                     PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
                 }
-                if (packetBuf.isNotEmpty()) {
+                if(packetBuf.isNotEmpty()) {
                     var canAttack = false
                     for(packet in packetBuf) {
                         if(packet is C03PacketPlayer) {
@@ -229,7 +329,7 @@ class NoSlow : Module() {
                 }
                 PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
                 nextTemp = true
-                waitC03 = modeValue.equals("Vulcan")
+                waitC03 = false
                 msTimer.reset()
             }
         }
@@ -238,18 +338,39 @@ class NoSlow : Module() {
     private val isBlocking: Boolean
         get() = (mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
+    private fun getEmptySlot(): Int {
+        for (i in 1..44) {
+            mc.thePlayer.inventoryContainer.getSlot(i).stack ?: return i
+        }
+        return -1
+    }
+
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        if (mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
+            return
         val packet = event.packet
 
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && nextTemp) {
-            if ((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
+        if (antiSwitchItem.get() && packet is S09PacketHeldItemChange && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+            event.cancelEvent()
+            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(packet.heldItemHotbarIndex))
+            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+        }
+
+        if (modeValue.equals("Medusa")) {
+            if ((mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) && sendPacket) {
+                PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
+                sendPacket = false
+            }
+            if (!mc.thePlayer.isUsingItem || !mc.thePlayer.isBlocking) {
+                sendPacket = true
+            }
+        }
+
+        if ((modeValue.equals("Matrix")  || modeValue.equals("GrimAC")) && nextTemp) {
+            if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
                 event.cancelEvent()
-            } else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
-                if (modeValue.equals("Vulcan") && waitC03 && packet is C03PacketPlayer) {
-                    waitC03 = false
-                    return
-                }
+            }else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
                 packetBuf.add(packet as Packet<INetHandlerPlayServer>)
                 event.cancelEvent()
             }
@@ -303,7 +424,7 @@ class NoSlow : Module() {
             }
         }
     }
-    
+
     override val tag: String
         get() = modeValue.get()
 }

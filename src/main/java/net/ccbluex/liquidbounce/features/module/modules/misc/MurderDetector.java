@@ -1,108 +1,140 @@
-package net.ccbluex.liquidbounce.features.module.modules.misc;
+package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventTarget;
-import net.ccbluex.liquidbounce.event.UpdateEvent;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-
-import java.util.HashMap;
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.minecraft.entity.player.EntityPlayer
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.item.Item
+import java.awt.Color
 
 @ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
-public class MurderDetector extends Module {
-    public static Minecraft mc=Minecraft.getMinecraft();
-    public static int[] itemIds={288,396,412,398,75,50};
-    public static Item[] itemTypes=new Item[] {
-            Items.fishing_rod,
-            Items.diamond_hoe,
-            Items.golden_hoe,
-            Items.iron_hoe,
-            Items.stone_hoe,
-            Items.wooden_hoe,
-            Items.stone_sword,
-            Items.diamond_sword,
-            Items.golden_sword,
-            ItemBlock.getItemFromBlock(Blocks.sponge),
-            Items.iron_sword,
-            Items.wooden_sword,
-            Items.diamond_axe,
-            Items.golden_axe,
-            Items.iron_axe,
-            Items.stone_axe,
-            Items.diamond_pickaxe,
-            Items.wooden_axe,
-            Items.golden_pickaxe,
-            Items.iron_pickaxe,
-            Items.stone_pickaxe,
-            Items.wooden_pickaxe,
-            Items.stone_shovel,
-            Items.diamond_shovel,
-            Items.golden_shovel,
-            Items.iron_shovel,
-            Items.wooden_shovel
-    };
-    public static HashMap<EntityPlayer, KillerData> killerData = new HashMap<>();
-    @EventTarget
-    public static void onUpdate(UpdateEvent event){
-        for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity instanceof EntityLivingBase) {
-                EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
-                if (entityLivingBase instanceof EntityPlayer) {
-                    EntityPlayer player = (EntityPlayer) entityLivingBase;
-                    if(player.inventory.getCurrentItem()!=null) {
-                        MurderDetector murderDetector=new MurderDetector();
-                        if(killerData.get(player)==null){
-                            if (murderDetector.isWeapon(player.inventory.getCurrentItem().getItem())) {
-                                ClientUtils.INSTANCE.displayChatMessage("§a[MurderDetector]§c " + player.getName() + " is Killer");
-                                LiquidBounce.hud.addNotification(new Notification("§a[MurderDetector]§c",player.getName() + " is Killer" , NotifyType.WARNING, 4000, 500));
-                                if(killerData.get(player) == null) killerData.put(player, new KillerData(player));
-                            }
-                        }else{
-                            if (!murderDetector.isWeapon(player.inventory.getCurrentItem().getItem())) {
-                                killerData.remove(player);
-                            }
-                        }
+object MurderDetector : Module() {
 
+    private val showText = BoolValue("ShowText", true)
+    private val chatValue = BoolValue("Chat", true)
+    private val notifyValue = BoolValue("Notification", true)
+
+    private var murder1: EntityPlayer? = null
+    private var murder2: EntityPlayer? = null
+
+    private val murderItems = mutableListOf(
+        267,  // Items.iron_sword,
+        272,  // Items.stone_sword,
+        256,  // Items.iron_shovel,
+        280,  // Items.stick,
+        271,  // Items.wooden_axe,
+        268,  // Items.wooden_sword,
+        273,  // Items.stone_shovel,
+        369,  // Items.blaze_rod,
+        277,  // Items.diamond_shovel,
+        359,  // Items.shears,
+        400,  // Items.pumpkin_pie,
+        285,  // Items.golden_pickaxe,
+        398,  // Items.carrot_on_a_stick,
+        357,  // Items.cookie,
+        279,  // Items.diamond_axe,
+        283,  // Items.golden_sword,
+        276,  // Items.diamond_sword,
+        293,  // Items.diamond_hoe,
+        421,  // Items.name_tag,
+        333,  // Items.boat,
+        409,  // Items.prismarine_shard,
+        349,  // Items.fish,
+        364,  // Items.cooked_beef,
+        382,  // Items.speckled_melon,
+        351,  // Items.dye,
+        340,  // Items.book,
+        406,  // Items.quartz,
+        396,  // Items.golden_carrot,
+        260,  // Items.apple,
+        2258, // Items.record_blocks
+        76,   // Blocks.redstone_torch,
+        32,   // Blocks.deadbush,
+        19,   // Blocks.sponge,
+        122,  // Blocks.dragon_egg,
+        175,  // Blocks.double_plant,
+        405,  // Blocks.nether_brick,
+        130   // Blocks.ender_chest
+    )
+
+    override fun onDisable() {
+        murder1 = null
+        murder2 = null
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        murder1 = null
+        murder2 = null
+    }
+
+    @EventTarget
+    fun onMotion(event: MotionEvent) {
+        if (event.eventState == EventState.PRE) {
+            for (player in mc.theWorld.playerEntities) {
+                if (mc.thePlayer.ticksExisted % 2 == 0) return
+                if (player.heldItem != null && (player.heldItem.displayName.contains(
+                        "Knife",
+                        ignoreCase = true
+                    ) || murderItems.contains(Item.getIdFromItem(player.heldItem.item)))
+                ) {
+                    if (murder1 == null) {
+                        if (chatValue.get())
+                            chat("§e" + player.name + "§r is Murderer!")
+                        if (notifyValue.get())
+                            LiquidBounce.hud.addNotification(
+                                Notification(
+                                    player.name + " is Murderer!","ALERT!",
+                                    NotifyType.INFO,
+                                    6000
+                                )
+                            )
+                        murder1 = player
+                        return
+                    }
+                    if (murder2 == null && player != murder1) {
+                        if (chatValue.get())
+                            chat("§e" + player.name + "§r is Murderer!")
+                        if (notifyValue.get())
+                            LiquidBounce.hud.addNotification(
+                                Notification(
+                                    player.name + " is Murder!","ALERT!",
+                                    NotifyType.INFO,
+                                    6000
+                                )
+                            )
+                        murder2 = player
                     }
                 }
             }
         }
     }
-    @Override
-    public void onEnable(){
-        killerData.clear();
-    }
-    public boolean isWeapon(Item item){
-        for(int id:itemIds){
-            Item itemId=Item.getItemById(id);
-            //ClientUtils.INSTANCE.displayChatMessage(itemId+":"+item);
-            if(item==itemId){
-                return true;
-            }
-        }
-        for(Item id:itemTypes){
-            if(item==id){
-                return true;
-            }
-        }
-        return false;
-    }
-}
-class KillerData {
-    public static String playerName="";
-    public KillerData(EntityPlayer player){
 
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+        val sc = ScaledResolution(mc)
+        if (showText.get()) {
+            Fonts.minecraftFont.drawString(
+                if (murder1 != null) "Murderer1: §e" + murder1?.name else "Murderer1: §cNone",
+                sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth(if (murder1 != null) "Murderer1: §e" + murder1?.name else "Murderer1: §cNone") / 2F,
+                66.5F,
+                Color(255, 255, 255).rgb,
+                true
+            )
+            Fonts.minecraftFont.drawString(
+                if (murder2 != null) "Murderer2: §e" + murder2?.name else "Murderer2: §cNone",
+                sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth(if (murder2 != null) "Murderer2: §e" + murder2?.name else "Murderer2: §cNone") / 2F,
+                77.5F,
+                Color(255, 255, 255).rgb,
+                true
+            )
+        }
     }
 }

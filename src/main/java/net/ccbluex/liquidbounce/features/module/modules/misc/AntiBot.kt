@@ -1,13 +1,11 @@
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.extensions.getFullName
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -18,6 +16,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.*
+import net.minecraft.world.WorldSettings
 import java.util.*
 
 @ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
@@ -37,10 +36,15 @@ object AntiBot : Module() {
     private val derpValue = BoolValue("Derp", true)
     private val wasInvisibleValue = BoolValue("WasInvisible", false)
     private val validNameValue = BoolValue("ValidName", true)
+    private val hiddenNameValue = BoolValue("HiddenName", false)
     private val armorValue = BoolValue("Armor", false)
+    private val invalidUUID = BoolValue("InvalidUUID", true) // Imported from LiquidBounce Legacy (Credits to EclipseDev)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
     private val noClipValue = BoolValue("NoClip", false)
+    private val czechHekValue = BoolValue("CzechMatrix", false)
+    private val czechHekPingCheckValue = BoolValue("PingCheck", true).displayable { czechHekValue.get() }
+    private val czechHekGMCheckValue = BoolValue("GamemodeCheck", true).displayable { czechHekValue.get() }
     private val reusedEntityIdValue = BoolValue("ReusedEntityId", false)
     private val spawnInCombatValue = BoolValue("SpawnInCombat", false)
     private val duplicateInWorldValue = BoolValue("DuplicateInWorld", false)
@@ -48,6 +52,9 @@ object AntiBot : Module() {
     private val duplicateCompareModeValue = ListValue("DuplicateCompareMode", arrayOf("OnTime", "WhenSpawn"), "OnTime").displayable { duplicateInTabValue.get() || duplicateInWorldValue.get() }
     private val fastDamageValue = BoolValue("FastDamage", false)
     private val fastDamageTicksValue = IntegerValue("FastDamageTicks", 5, 1, 20).displayable { fastDamageValue.get() }
+    private val removeFromWorld = BoolValue("RemoveFromWorld", false)
+    private val removeIntervalValue = IntegerValue("Remove-Interval", 20, 1, 100).displayable { removeFromWorld.get() }
+    private val debugValue = BoolValue("Debug", false)
     private val alwaysInRadiusValue = BoolValue("AlwaysInRadius", false)
     private val alwaysRadiusValue = FloatValue("AlwaysInRadiusBlocks", 20f, 5f, 30f).displayable { alwaysInRadiusValue.get() }
     private val alwaysInRadiusRemoveValue = BoolValue("AlwaysInRadiusRemove", false).displayable { alwaysInRadiusValue.get() }
@@ -67,10 +74,28 @@ object AntiBot : Module() {
     private val noClip = mutableListOf<Int>()
     private val hasRemovedEntities = mutableListOf<Int>()
     private val regex = Regex("\\w{3,16}")
+    private var wasAdded = mc.thePlayer != null
 
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        if (mc.thePlayer == null || mc.theWorld == null) return
+        if (removeFromWorld.get() && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % removeIntervalValue.get() == 0) {
+            val ent: MutableList<EntityPlayer> = ArrayList()
+            for (entity in mc.theWorld.playerEntities) {
+                if (entity !== mc.thePlayer && isBot(entity)) ent.add(entity)
+            }
+            if (ent.isEmpty()) return
+            for (e in ent) {
+                mc.theWorld.removeEntity(e)
+                if (debugValue.get()) displayChatMessage("§7[§a§lAnti Bot§7] §fRemoved §r" + e.name + " §fdue to it being a bot.")
+            }
+        }
+    }
+
+    @JvmStatic
     fun isBot(entity: EntityLivingBase): Boolean {
         // Check if entity is a player
-        if (entity !is EntityPlayer) {
+        if (entity !is EntityPlayer || entity === mc.thePlayer) {
             return false
         }
 
@@ -80,6 +105,10 @@ object AntiBot : Module() {
         }
 
         if (validNameValue.get() && !entity.name.matches(regex)) {
+            return true
+        }
+
+        if (hiddenNameValue.get() && ( entity.getName().contains("\u00A7") || (entity.hasCustomName() && entity.getCustomNameTag().contains(entity.getName()) ))){
             return true
         }
 
@@ -139,6 +168,10 @@ object AntiBot : Module() {
             }
         }
 
+        if (invalidUUID.get() && mc.netHandler.getPlayerInfo(entity.uniqueID) == null) {
+            return true
+        }
+
         if (pingValue.get()) {
             if (mc.netHandler.getPlayerInfo(entity.uniqueID)?.responseTime == 0) {
                 return true
@@ -185,7 +218,11 @@ object AntiBot : Module() {
         }
 
         if (alwaysInRadiusValue.get() && !notAlwaysInRadius.contains(entity.entityId)) {
+            if (alwaysInRadiusRemoveValue.get()) {
+                mc.theWorld.removeEntity(entity)
+            }
             return true
+
         }
 
         return entity.name.isEmpty() || entity.name == mc.thePlayer.name
@@ -233,19 +270,30 @@ object AntiBot : Module() {
 
             if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get() || !alwaysInRadiusWithTicksCheckValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) > alwaysRadiusValue.get()) {
                 notAlwaysInRadius.add(entity.entityId)
-                if (alwaysInRadiusRemoveValue.get()) {
-                    mc.theWorld.removeEntity(entity)
-                }
             }
         }
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (mc.thePlayer == null || mc.theWorld == null) {
-            return
-        }
+        if (mc.thePlayer == null || mc.theWorld == null) return
+        if (czechHekValue.get()) {
 
+            val packet = event.packet
+
+            if (packet is S41PacketServerDifficulty) wasAdded = false
+            if (packet is S38PacketPlayerListItem) {
+                val packetListItem = event.packet as S38PacketPlayerListItem
+                val data = packetListItem.entries[0]
+                if (data.profile != null && data.profile.name != null) {
+                    if (!wasAdded) wasAdded =
+                        data.profile.name == mc.thePlayer.name else if (!mc.thePlayer.isSpectator && !mc.thePlayer.capabilities.allowFlying && (!czechHekPingCheckValue.get() || data.ping != 0) && (!czechHekGMCheckValue.get() || data.gameMode != WorldSettings.GameType.NOT_SET)) {
+                        event.cancelEvent()
+                        if (debugValue.get()) displayChatMessage("§7[§a§lAnti Bot/§6Matrix§7] §fPrevented §r" + data.profile.name + " §ffrom spawning.")
+                    }
+                }
+            }
+        }
         val packet = event.packet
 
         if(packet is S18PacketEntityTeleport) {
@@ -270,7 +318,7 @@ object AntiBot : Module() {
                 }
             }
         } else if (packet is S0CPacketSpawnPlayer) {
-            if(LiquidBounce.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
+            if (LiquidBounce.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
                 spawnInCombat.add(packet.entityID)
             }
         } else if (packet is S13PacketDestroyEntities) {
@@ -282,7 +330,7 @@ object AntiBot : Module() {
 
             if (entity is EntityPlayer) {
                 lastDamageVl[entity.entityId] = lastDamageVl.getOrDefault(entity.entityId, 0f) + if (entity.ticksExisted - lastDamage.getOrDefault(entity.entityId, 0) <= fastDamageTicksValue.get()) {
-                     1f
+                    1f
                 } else {
                     -0.5f
                 }

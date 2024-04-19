@@ -326,7 +326,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 Color(255, 255, 255, 170).rgb
         )
         var versionMsg =
-                "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE + " (May be isn't work)"
+                "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE
         FontLoaders.F16.drawString(
                 versionMsg,
                 this.width - FontLoaders.F16.getStringWidth(versionMsg) - 10F,
