@@ -16,7 +16,7 @@ repositories {
     maven { url = "https://fdpclient.club/" }
 }
 
-version = "5.1.0-dev"
+version = "5.2.3-dev"
 group = "org.unlegitmc.fdp"
 archivesBaseName = "FDPClient"
 
