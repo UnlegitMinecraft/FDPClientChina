@@ -16,21 +16,17 @@ import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
-import org.apache.commons.io.Charsets
 import org.lwjgl.opengl.GLContext
 import java.awt.Color
 import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
 import java.util.*
-
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     private val girl: Int
@@ -38,16 +34,16 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     private var openGLWarning2: String? = null
     private var openGLWarningLink: String? = null
     private var splashText = "missingno"
-    var drawed = false;
-    var updateCounter = 0f
-    var clicked = false;
-    var displayed = false;
+    private var drawed = false
+    private var updateCounter = 0f
+    private var clicked = false
+    private var displayed = false
 
     init {
-        var bufferedreader: BufferedReader? = null
+        val bufferedreader: BufferedReader? = null
         try {
             val list: MutableList<String> = Lists.newArrayList()
-            if (!list.isEmpty()) {
+            if (list.isNotEmpty()) {
                 do {
                     splashText = list[RANDOM.nextInt(list.size / 2)]
                 } while (splashText.hashCode() == 125780783)
@@ -71,7 +67,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         }
     }
 
-    fun drawBtns() {
+    private fun drawBtns() {
         this.buttonList.add(
                 TestBtn(
                         1,
@@ -208,7 +204,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 )
         )
 
-        drawed = true;
+        drawed = true
     }
 
     /* For modification, please keep "Designed by XiGua" */
@@ -252,15 +248,15 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val defaultHeight = (this.height).toFloat()
         val defaultWidth = (this.width).toFloat()
         //RenderUtils.drawCircle(defaultWidth/2,defaultHeight/2 + 60F, 150F,Color(0,0,0,100).rgb);
-        val i = 0;
+        val i = 0
         val defaultHeight1 = (this.height).toDouble()
         val defaultWidth1 = (this.width).toDouble()
 
         val imageWidth = arrayOf(230, 250, 400)
         val imageHeight = arrayOf(312, 353, 422, 305, 242)
 
-        var imageX: Int
-        var imageY: Int
+        val imageX: Int
+        val imageY: Int
 
         when (girl) {
             0 -> {
@@ -325,7 +321,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 this.height - 25f,
                 Color(255, 255, 255, 170).rgb
         )
-        var versionMsg =
+        val versionMsg =
                 "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE
         FontLoaders.F16.drawString(
                 versionMsg,
@@ -335,7 +331,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         )
         try {
             if (!displayed) {
-                var back = Layer.draw(
+                val back = Layer.draw(
                         defaultWidth.toInt(),
                         defaultHeight1.toInt(),
                         LiquidBounce.CLIENTTEXT.split("$")[2].toFloat(),
@@ -348,7 +344,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                         clicked
                 )
                 if (back == 1) {
-                    drawed = false;
+                    drawed = false
                     buttonList.removeAll(buttonList)
                 } else if (back == 2) {
                     displayed = true
@@ -357,7 +353,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 if (drawed && back != 1) {
                     //drawBtns()
                 }
-                clicked = false;
+                clicked = false
             } else {
                 if (!drawed) {
                     drawBtns()
@@ -371,7 +367,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
 
     override fun mouseClicked(p_mouseClicked_1_: Int, i2: Int, i3: Int) {
-        clicked = true;
+        clicked = true
         super.mouseClicked(p_mouseClicked_1_, i2, i3)
     }
 
