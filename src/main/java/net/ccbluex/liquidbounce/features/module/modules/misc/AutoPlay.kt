@@ -23,9 +23,12 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
-class AutoPlay : Module() {
+object AutoPlay : Module() {
 
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "HyCraft", "HyDracraft", "Pika", "MineFC/HeroMC_Bedwars", "Supercraft"), "RedeSky")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "Hydracraft", "HyCraft", "MineFC/HeroMC_Bedwars", "Supercraft", "Universocraft", "Librecraft"), "BlocksMC")
+
+
+    private val unimode = ListValue("Universocraft-Mode", arrayOf("SkyWars", "Bedwars", "Eggwars", "HungerGames"), "SkyWars").displayable { modeValue.equals("Universocraft") }
     private val bwModeValue = ListValue("Mode", arrayOf("SOLO", "4v4v4v4"), "4v4v4v4").displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
     private val autoStartValue = BoolValue("AutoStartAtLobby", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
     private val replayWhenKickedValue = BoolValue("ReplayWhenKicked", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
@@ -111,19 +114,74 @@ class AutoPlay : Module() {
             val text = packet.chatComponent.unformattedText
             val component = packet.chatComponent
             when (modeValue.get().lowercase()) {
+                "supercraft" -> {
+                    if (text.contains("Ganador: " + mc.session.username, true) || text.contains(mc.session.username + " fue asesinado", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/sw leave")
+                            mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                            correctjoin()
+                        }
+                    }
+                    if (text.contains("El juego ya fue iniciado.", true)) {
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, retrying...", NotifyType.ERROR, 1755))
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/sw leave")
+                            mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                        }
+                    }
+                }
                 "minemora" -> {
                     if (text.contains("Has click en alguna de las siguientes opciones", true)) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/join")
+                            correctjoin()
+                        }
+                    }
+                }
+                "universocraft" -> {
+                    if (text.contains("Jugar de nuevo", true)) {
+                        queueAutoPlay {
+                            when (unimode.get()) {
+                                "SkyWars" -> {
+                                    mc.thePlayer.sendChatMessage("/skywars random")
+                                }
+                                "Bedwars" -> {
+                                    mc.thePlayer.sendChatMessage("/bedwars random")
+                                }
+                                "Eggwars" -> {
+                                    mc.thePlayer.sendChatMessage("/eggwars random")
+                                }
+                                "Hungergames" -> {
+                                    mc.thePlayer.sendChatMessage("/playagain")
+                                }
+                            }
+                            correctjoin()
+                        }
+                    }
+                }
+                "librecraft" -> {
+                    if (text.contains("¡Partida finalizada!", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/saliryentrar")
+                            correctjoin()
+                        }
+                    }
+                }
+                "hydracraft" -> {
+                    if (text.contains("Has ganado ¿Qué quieres hacer?", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/playagain")
+                            correctjoin()
                         }
                     }
                 }
                 "hycraft" -> {
                     component.siblings.forEach { sib ->
                         val clickEvent = sib.chatStyle.chatClickEvent
-                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("playagain")) {
+                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("play")) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(clickEvent.value)
+                                correctjoin()
                             }
                         }
                     }
@@ -141,21 +199,15 @@ class AutoPlay : Module() {
                     }
                 }
                 "jartex" -> {
-                    if (text.contains("Click here to play again", true)) {
+                    if (text.contains("Play Again?", true)) {
                         component.siblings.forEach { sib ->
                             val clickEvent = sib.chatStyle.chatClickEvent
                             if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
                                 queueAutoPlay {
                                     mc.thePlayer.sendChatMessage(clickEvent.value)
+                                    correctjoin()
                                 }
                             }
-                        }
-                    }
-                }
-                "hydracraft" -> {
-                    if (text.contains("Has ganado ¿Qué quieres hacer?", true)) {
-                        queueAutoPlay {
-                            mc.thePlayer.sendChatMessage("/playagain")
                         }
                     }
                 }
@@ -173,9 +225,25 @@ class AutoPlay : Module() {
                     if (text.contains(mc.getSession().username + " has been") || text.contains(mc.getSession().username + " died.")) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/skywars-normal-solo")
+                            correctjoin()
                         }
                     }
                 }
+                "hypixel" -> {
+                    fun process(component: IChatComponent) {
+                        val value = component.chatStyle.chatClickEvent?.value
+                        if (value != null && value.startsWith("/play", true) && !value.startsWith("/play skyblock", true)) {
+                            queueAutoPlay {
+                                mc.thePlayer.sendChatMessage(value)
+                            }
+                        }
+                        component.siblings.forEach {
+                            process(it)
+                        }
+                    }
+                    process(packet.chatComponent)
+                }
+
                 "minefc/heromc_bedwars" -> {
                     if (text.contains("Bạn đã bị loại!", false) || text.contains("đã thắng trò chơi", false)) {
                         mc.thePlayer.sendChatMessage("/bw leave")
@@ -189,6 +257,7 @@ class AutoPlay : Module() {
 
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/bw join ${bwModeValue.get()}")
+                            correctjoin()
                         }
                         waitForLobby = false
                     }
@@ -197,35 +266,6 @@ class AutoPlay : Module() {
                         LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, showing GUI...", NotifyType.ERROR, 1000))
                         mc.thePlayer.sendChatMessage("/bw gui ${bwModeValue.get()}")
                     }
-                }
-                "supercraft" -> {
-                    if (text.contains("Ganador: " + mc.session.username, true) || text.contains(mc.session.username + " fue asesinado", true)) {
-                        queueAutoPlay {
-                            mc.thePlayer.sendChatMessage("/sw leave")
-                            mc.thePlayer.sendChatMessage("/sw randomjoin solo")
-                        }
-                    }
-                    if (text.contains("El juego ya fue iniciado.", true)) {
-                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, retrying...", NotifyType.ERROR, 1755))
-                        queueAutoPlay {
-                            mc.thePlayer.sendChatMessage("/sw leave")
-                            mc.thePlayer.sendChatMessage("/sw randomjoin solo")
-                        }
-                    }
-                }
-                "hypixel" -> {
-                    fun process(component: IChatComponent) {
-                        val value = component.chatStyle.chatClickEvent?.value
-                        if (value != null && value.startsWith("/play", true)) {
-                            queueAutoPlay {
-                                mc.thePlayer.sendChatMessage(value)
-                            }
-                        }
-                        component.siblings.forEach {
-                            process(it)
-                        }
-                    }
-                    process(packet.chatComponent)
                 }
             }
         }
@@ -246,6 +286,10 @@ class AutoPlay : Module() {
             }
             LiquidBounce.hud.addNotification(Notification(this.name, "Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO, delayValue.get() * 1000))
         }
+    }
+
+    fun correctjoin() {
+        LiquidBounce.hud.addNotification(Notification("AutoPlay", "You joined in the new game", NotifyType.SUCCESS, 1000, 500))
     }
 
     @EventTarget

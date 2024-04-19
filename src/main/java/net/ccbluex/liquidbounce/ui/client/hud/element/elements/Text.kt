@@ -203,10 +203,10 @@ class Text(
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,220).rgb)
             FontLoaders.C14.drawString(
-                LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5.0f, 27.0f,Color(255,255,255,220).rgb
+                LiquidBounce.CLIENT_VERSION + " | " + LiquidBounce.VERSIONTYPE, 5.0f, 27.0f, Color(255,255,255,220).rgb
             )
             FontLoaders.C14.drawString(
-                "CN 2023Q4 | Reborn!", 5.0f, 37.0f,Color(255,255,255,220).rgb
+                LiquidBounce.CLIENT_BRANCH.toString() + " Branch", 5.0f, 37.0f, Color(255,255,255,220).rgb
             )
         }
 

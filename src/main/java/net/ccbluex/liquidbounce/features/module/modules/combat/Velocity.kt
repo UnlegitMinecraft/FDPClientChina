@@ -38,8 +38,8 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, -1F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F)
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
-                                                      "AAC5.2.0", "AAC5.2.0Combat",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Vanilla", "Hypixel",
+                                                      "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC5.2.0Combat",
                                                       "MatrixReduce", "MatrixSimple", "MatrixReverse",
                                                       "Reverse", "SmoothReverse",
                                                       "Jump",
@@ -64,6 +64,8 @@ class Velocity : Module() {
     private val legitStrafeValue = BoolValue("LegitStrafe", false).displayable { modeValue.equals("Legit") }
     private val legitFaceValue = BoolValue("LegitFace", true).displayable { modeValue.equals("Legit") }
 
+    // hypixel
+    private var offGroundTicks = 0
 
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val onlyCombatValue = BoolValue("OnlyCombat", false)
@@ -108,9 +110,9 @@ class Velocity : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(velocityInput) {
+        if (velocityInput) {
             velocityTick++
-        }else velocityTick = 0
+        } else velocityTick = 0
         
         if (redeCount <24) redeCount++
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb) {
@@ -125,14 +127,14 @@ class Velocity : Module() {
 
         when (modeValue.get().lowercase()) {
             "tick" -> {
-                if(velocityTick > velocityTickValue.get()) {
+                if (velocityTick > velocityTickValue.get()) {
                     if(mc.thePlayer.motionY > 0) mc.thePlayer.motionY = 0.0
                     mc.thePlayer.motionX = 0.0
                     mc.thePlayer.motionZ = 0.0
                     mc.thePlayer.jumpMovementFactor = -0.00001f
                     velocityInput = false
                 }
-                if(mc.thePlayer.onGround && velocityTick > 1) {
+                if (mc.thePlayer.onGround && velocityTick > 1) {
                     velocityInput = false
                 }
             }
@@ -282,6 +284,14 @@ class Velocity : Module() {
                     velocityInput = false
                 }
             }
+
+            "hypixel" -> {
+                if (mc.thePlayer.onGround) {
+                    offGroundTicks = 0
+                } else {
+                    offGroundTicks ++
+                }
+            }
         }
     }
 
@@ -301,7 +311,7 @@ class Velocity : Module() {
             velocityTimer.reset()
             velocityTick = 0
 
-            if(!overrideDirectionValue.equals("None")) {
+            if (!overrideDirectionValue.equals("None")) {
                 val yaw = Math.toRadians(if(overrideDirectionValue.get() == "Hard") {
                     overrideDirectionYawValue.get()
                 } else {
@@ -435,6 +445,11 @@ class Velocity : Module() {
 
                 "legit" -> {
                     pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                }
+
+                "hypixel" -> {
+                    event.cancelEvent()
+                    if (offGroundTicks < 5) mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
                 }
             }
         }
