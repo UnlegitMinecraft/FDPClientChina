@@ -18,11 +18,12 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Random;
 
 public final class RotationUtils extends MinecraftInstance implements Listenable {
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
     public static float[] prevRotations = new float[2];
 
     private static int keepLength;
@@ -294,7 +295,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
             }
         }
         
-        if(vecRotation == null || randMode == "Off")
+        if(vecRotation == null || Objects.equals(randMode, "Off"))
             return vecRotation;
         
         double rand1 = random.nextDouble();
@@ -569,10 +570,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
     /**
      *
-     * @param posX
-     * @param posY
-     * @param posZ
-     * @return
      */
     public static Rotation getRotations(double posX, double posY, double posZ) {
         EntityPlayerSP player = RotationUtils.mc.thePlayer;

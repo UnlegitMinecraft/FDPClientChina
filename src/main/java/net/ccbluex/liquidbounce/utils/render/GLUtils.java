@@ -1,15 +1,13 @@
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.minecraft.client.renderer.RenderHelper;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class GLUtils
@@ -127,13 +125,12 @@ public class GLUtils
     }
 
     public static void revertAllCaps() {
-        for (Iterator localIterator = glCapMap.keySet().iterator(); localIterator.hasNext(); ) {
-            int cap = (Integer) localIterator.next();
+        for (int cap : glCapMap.keySet()) {
             revertGLCap(cap);
         }
     }
 
-    private static Map<Integer, Boolean> glCapMap = new HashMap();
+    private static final Map<Integer, Boolean> glCapMap = new HashMap();
 
     public static double interpolate(double current, double old, double scale) {
         return old + (current - old) * scale;

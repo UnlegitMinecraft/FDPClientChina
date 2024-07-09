@@ -19,7 +19,6 @@ public class WorldToScreen {
         return (Matrix4f) new Matrix4f().load(floatBuffer);
     }
 
-
     public static Vector2f worldToScreen(Vector3f pointInWorld, int screenWidth, int screenHeight) {
         return worldToScreen(pointInWorld, getMatrix(GL11.GL_MODELVIEW_MATRIX), getMatrix(GL11.GL_PROJECTION_MATRIX), screenWidth, screenHeight);
     }

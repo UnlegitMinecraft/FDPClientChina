@@ -38,11 +38,11 @@ object RandomUtils {
         }
     }
 
-    fun random(length: Int, chars: String): String? {
+    fun random(length: Int, chars: String): String {
         return random(length, chars.toCharArray())
     }
 
-    fun random(length: Int, chars: CharArray): String? {
+    fun random(length: Int, chars: CharArray): String {
         val stringBuilder = java.lang.StringBuilder()
         for (i in 0 until length) stringBuilder.append(chars[Random().nextInt(chars.size)])
         return stringBuilder.toString()
@@ -56,11 +56,11 @@ object RandomUtils {
         return randomString(length, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
     }
 
-    fun randomString(length: Int, chars: String): String {
+    private fun randomString(length: Int, chars: String): String {
         return randomString(length, chars.toCharArray())
     }
 
-    fun randomString(length: Int, chars: CharArray): String {
+    private fun randomString(length: Int, chars: CharArray): String {
         val stringBuilder = StringBuilder()
         for (i in 0 until length) stringBuilder.append(chars[random.nextInt(chars.size)])
         return stringBuilder.toString()

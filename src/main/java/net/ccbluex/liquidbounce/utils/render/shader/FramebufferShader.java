@@ -75,7 +75,6 @@ public abstract class FramebufferShader extends Shader {
     }
 
     /**
-     * @param frameBuffer
      * @return frameBuffer
      * @author TheSlowly
      */

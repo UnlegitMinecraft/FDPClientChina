@@ -12,13 +12,13 @@ object MathUtils {
     }
     // TODO: 两圆相交坐标求解（月底能有时间弄）（TargetStrafe）
     fun sqrt(a : Double) : Float{
-        return kotlin.math.sqrt(a).toFloat();
+        return kotlin.math.sqrt(a).toFloat()
     }
-    fun lerp(a: Array<Double>, b: Array<Double>, t: Double) = arrayOf(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+    private fun lerp(a: Array<Double>, b: Array<Double>, t: Double) = arrayOf(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
 
-    fun distanceSq(a: Array<Double>, b: Array<Double>): Double = (a[0] - b[0]).pow(2) + (a[1] - b[1]).pow(2)
+    private fun distanceSq(a: Array<Double>, b: Array<Double>): Double = (a[0] - b[0]).pow(2) + (a[1] - b[1]).pow(2)
 
-    fun distanceToSegmentSq(p: Array<Double>, v: Array<Double>, w: Array<Double>): Double {
+    private fun distanceToSegmentSq(p: Array<Double>, v: Array<Double>, w: Array<Double>): Double {
         val l2 = distanceSq(v, w)
         if (l2 == 0.0) {
             return distanceSq(p, v)
@@ -71,7 +71,7 @@ object MathUtils {
         }
 
         // if that point is too far
-        if (Math.sqrt(maxDistSq) > epsilon) {
+        if (kotlin.math.sqrt(maxDistSq) > epsilon) {
             // split
             simplifyPoints(points, epsilon, start, maxNdx + 1, outPoints)
             simplifyPoints(points, epsilon, maxNdx, end, outPoints)

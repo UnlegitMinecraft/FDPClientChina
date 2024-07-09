@@ -9,7 +9,7 @@ public enum BlendUtils {
 
     String colorCode;
 
-    private BlendUtils(String colorCode) {
+    BlendUtils(String colorCode) {
         this.colorCode = colorCode;
     }
 
@@ -32,8 +32,7 @@ public enum BlendUtils {
             float max = range[1] - range[0];
             float value = progress - range[0];
             float weight = value / max;
-            Color color = blend(colorRange[0], colorRange[1], (double)(1.0F - weight));
-            return color;
+            return blend(colorRange[0], colorRange[1], 1.0F - weight);
         } else {
             throw new IllegalArgumentException("Fractions and colours must have equal number of elements");
         }
@@ -85,7 +84,7 @@ public enum BlendUtils {
 
         try {
             color3 = new Color(red, green, blue);
-        } catch (IllegalArgumentException var13) {
+        } catch (IllegalArgumentException ignored) {
         }
 
         return color3;

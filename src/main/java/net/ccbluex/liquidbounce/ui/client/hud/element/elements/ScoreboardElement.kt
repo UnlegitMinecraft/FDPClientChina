@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.NewRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -25,7 +26,6 @@ import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.scoreboard.Scoreboard
 import net.minecraft.util.EnumChatFormatting
-import skidunion.destiny.utils.render.NewRenderUtils
 import java.awt.Color
 
 /**

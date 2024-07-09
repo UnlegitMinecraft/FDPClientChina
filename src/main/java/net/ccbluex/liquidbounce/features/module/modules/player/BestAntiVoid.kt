@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MoveUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.timer.TimeHelper
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -22,7 +22,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 class BestAntiVoid : Module() {
     private val pullbackTime = IntegerValue("PullbackTime", 850, 800, 1800)
     private val debug = BoolValue("Debug", false)
-    var timer: TimeHelper = TimeHelper()
+    var timer: MSTimer = MSTimer()
     var lastGroundPos = DoubleArray(3)
     var packets = ArrayList<C03PacketPlayer>()
 
@@ -43,7 +43,7 @@ class BestAntiVoid : Module() {
                 if (isInVoid()) {
                     e.cancelEvent()
                     packets.add(e.packet)
-                    if (timer.delay(pullbackTime.get().toLong())) {
+                    if (timer.hasTimePassed(pullbackTime.get().toLong())) {
                         PacketUtils.sendPacketNoEvent(
                             C04PacketPlayerPosition(
                                 lastGroundPos[0], lastGroundPos[1] - 1.0,

@@ -7,9 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
 import net.ccbluex.liquidbounce.event.MovementEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.MathUtils
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 
 
 class HypixelHop : SpeedMode("HypixelHop") {

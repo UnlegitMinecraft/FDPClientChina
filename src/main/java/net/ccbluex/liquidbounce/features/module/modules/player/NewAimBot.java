@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.WorldUtil;
 import net.ccbluex.liquidbounce.utils.render.RenderUtil;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
@@ -23,9 +22,7 @@ import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemSword;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import scala.Int;
 
 import java.awt.*;
 import java.util.ArrayList;

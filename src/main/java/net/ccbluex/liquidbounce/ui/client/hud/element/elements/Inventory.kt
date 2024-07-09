@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.NewRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -15,7 +16,6 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import skidunion.destiny.utils.render.NewRenderUtils
 import java.awt.Color
 
 /**

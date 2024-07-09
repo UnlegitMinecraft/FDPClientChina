@@ -28,8 +28,7 @@ public enum SmoothRenderUtils
     public static float delta;
     
     public static boolean isHovering(final int n, final int n2, final float n3, final float n4, final float n5, final float n6) {
-        final boolean b = n > n3 && n < n5 && n2 > n4 && n2 < n6;
-        return b;
+        return n > n3 && n < n5 && n2 > n4 && n2 < n6;
     }
     
     public static int width() {
@@ -315,7 +314,7 @@ public enum SmoothRenderUtils
             final BufferedReader reader = new BufferedReader(file);
             String line;
             while ((line = reader.readLine()) != null) {
-                shaderSource = String.valueOf(shaderSource) + line + "\n";
+                shaderSource = shaderSource + line + "\n";
             }
             reader.close();
         }
@@ -323,7 +322,7 @@ public enum SmoothRenderUtils
             e.printStackTrace();
             System.exit(-1);
         }
-        return shaderSource.toString();
+        return shaderSource;
     }
     
     public static void drawImage(final ResourceLocation image, final int x, final int y, final int width, final int height) {
@@ -459,7 +458,7 @@ public enum SmoothRenderUtils
             ARBShaderObjects.glDeleteObjectARB(shader);
             throw exc;
         }
-        ARBShaderObjects.glShaderSourceARB(shader, (CharSequence)shaderCode);
+        ARBShaderObjects.glShaderSourceARB(shader, shaderCode);
         ARBShaderObjects.glCompileShaderARB(shader);
         if (ARBShaderObjects.glGetObjectParameteriARB(shader, 35713) == 0) {
             throw new RuntimeException("Error creating shader:");
@@ -586,7 +585,7 @@ public enum SmoothRenderUtils
     }
     
     public static void setColor(final Color c) {
-        GL11.glColor4d((double)(c.getRed() / 255.0f), (double)(c.getGreen() / 255.0f), (double)(c.getBlue() / 255.0f), (double)(c.getAlpha() / 255.0f));
+        GL11.glColor4d(c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f, c.getAlpha() / 255.0f);
     }
     
     public static void checkSetupFBO() {
@@ -1543,35 +1542,35 @@ public enum SmoothRenderUtils
 
     public static class r2DUtils {
         public static void enableGL2D() {
-            GL11.glDisable((int) 2929);
-            GL11.glEnable((int) 3042);
-            GL11.glDisable((int) 3553);
-            GL11.glBlendFunc((int) 770, (int) 771);
-            GL11.glDepthMask((boolean) true);
-            GL11.glEnable((int) 2848);
-            GL11.glHint((int) 3154, (int) 4354);
-            GL11.glHint((int) 3155, (int) 4354);
+            GL11.glDisable(2929);
+            GL11.glEnable(3042);
+            GL11.glDisable(3553);
+            GL11.glBlendFunc(770, 771);
+            GL11.glDepthMask(true);
+            GL11.glEnable(2848);
+            GL11.glHint(3154, 4354);
+            GL11.glHint(3155, 4354);
         }
 
         public static void disableGL2D() {
-            GL11.glEnable((int) 3553);
-            GL11.glDisable((int) 3042);
-            GL11.glEnable((int) 2929);
-            GL11.glDisable((int) 2848);
-            GL11.glHint((int) 3154, (int) 4352);
-            GL11.glHint((int) 3155, (int) 4352);
+            GL11.glEnable(3553);
+            GL11.glDisable(3042);
+            GL11.glEnable(2929);
+            GL11.glDisable(2848);
+            GL11.glHint(3154, 4352);
+            GL11.glHint(3155, 4352);
         }
 
         public static void draw2DCorner(Entity e, double posX, double posY, double posZ, int color) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(posX, posY, posZ);
-            GL11.glNormal3f((float) 0.0f, (float) 0.0f, (float) 0.0f);
+            GL11.glNormal3f(0.0f, 0.0f, 0.0f);
             GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
             GlStateManager.scale(-0.1, -0.1, 0.1);
-            GL11.glDisable((int) 2896);
-            GL11.glDisable((int) 2929);
-            GL11.glEnable((int) 3042);
-            GL11.glBlendFunc((int) 770, (int) 771);
+            GL11.glDisable(2896);
+            GL11.glDisable(2929);
+            GL11.glEnable(3042);
+            GL11.glBlendFunc(770, 771);
             GlStateManager.depthMask(true);
             r2DUtils.drawRect(7.0, -20.0, 7.300000190734863, -17.5, color);
             r2DUtils.drawRect(-7.300000190734863, -20.0, -7.0, -17.5, color);
@@ -1589,14 +1588,14 @@ public enum SmoothRenderUtils
             r2DUtils.drawRect(4.0, 3.0, 7.0, 3.299999952316284, color);
             r2DUtils.drawRect(-7.300000190734863, 0.8, -7.0, 3.299999952316284, color);
             r2DUtils.drawRect(7.0, 0.5, 7.300000190734863, 3.299999952316284, color);
-            GL11.glDisable((int) 3042);
-            GL11.glEnable((int) 2929);
+            GL11.glDisable(3042);
+            GL11.glEnable(2929);
             GlStateManager.popMatrix();
         }
 
         public static void drawRoundedRect(float x, float y, float x1, float y1, int borderC, int insideC) {
             r2DUtils.enableGL2D();
-            GL11.glScalef((float) 0.5f, (float) 0.5f, (float) 0.5f);
+            GL11.glScalef(0.5f, 0.5f, 0.5f);
             r2DUtils.drawVLine(x *= 2.0f, (y *= 2.0f) + 1.0f, (y1 *= 2.0f) - 2.0f, borderC);
             r2DUtils.drawVLine((x1 *= 2.0f) - 1.0f, y + 1.0f, y1 - 2.0f, borderC);
             r2DUtils.drawHLine(x + 2.0f, x1 - 3.0f, y, borderC);
@@ -1606,7 +1605,7 @@ public enum SmoothRenderUtils
             r2DUtils.drawHLine(x1 - 2.0f, x1 - 2.0f, y1 - 2.0f, borderC);
             r2DUtils.drawHLine(x + 1.0f, x + 1.0f, y1 - 2.0f, borderC);
             r2DUtils.drawRect(x + 1.0f, y + 1.0f, x1 - 1.0f, y1 - 1.0f, insideC);
-            GL11.glScalef((float) 2.0f, (float) 2.0f, (float) 2.0f);
+            GL11.glScalef(2.0f, 2.0f, 2.0f);
             r2DUtils.disableGL2D();
             Gui.drawRect(0, 0, 0, 0, 0);
         }
@@ -1619,11 +1618,11 @@ public enum SmoothRenderUtils
         }
 
         private static void drawRect(double x2, double y2, double x1, double y1) {
-            GL11.glBegin((int) 7);
-            GL11.glVertex2d((double) x2, (double) y1);
-            GL11.glVertex2d((double) x1, (double) y1);
-            GL11.glVertex2d((double) x1, (double) y2);
-            GL11.glVertex2d((double) x2, (double) y2);
+            GL11.glBegin(7);
+            GL11.glVertex2d(x2, y1);
+            GL11.glVertex2d(x1, y1);
+            GL11.glVertex2d(x1, y2);
+            GL11.glVertex2d(x2, y2);
             GL11.glEnd();
         }
 
@@ -1632,7 +1631,7 @@ public enum SmoothRenderUtils
             float red = (float) (hex >> 16 & 255) / 255.0f;
             float green = (float) (hex >> 8 & 255) / 255.0f;
             float blue = (float) (hex & 255) / 255.0f;
-            GL11.glColor4f((float) red, (float) green, (float) blue, (float) alpha);
+            GL11.glColor4f(red, green, blue, alpha);
         }
 
         public static void drawRect(float x, float y, float x1, float y1, int color) {
@@ -1654,28 +1653,28 @@ public enum SmoothRenderUtils
 
         public static void drawBorderedRect(float x, float y, float x1, float y1, int insideC, int borderC) {
             r2DUtils.enableGL2D();
-            GL11.glScalef((float) 0.5f, (float) 0.5f, (float) 0.5f);
+            GL11.glScalef(0.5f, 0.5f, 0.5f);
             r2DUtils.drawVLine(x *= 2.0f, y *= 2.0f, y1 *= 2.0f, borderC);
             r2DUtils.drawVLine((x1 *= 2.0f) - 1.0f, y, y1, borderC);
             r2DUtils.drawHLine(x, x1 - 1.0f, y, borderC);
             r2DUtils.drawHLine(x, x1 - 2.0f, y1 - 1.0f, borderC);
             r2DUtils.drawRect(x + 1.0f, y + 1.0f, x1 - 1.0f, y1 - 1.0f, insideC);
-            GL11.glScalef((float) 2.0f, (float) 2.0f, (float) 2.0f);
+            GL11.glScalef(2.0f, 2.0f, 2.0f);
             r2DUtils.disableGL2D();
         }
 
         public static void drawGradientRect(float x, float y, float x1, float y1, int topColor, int bottomColor) {
             r2DUtils.enableGL2D();
-            GL11.glShadeModel((int) 7425);
-            GL11.glBegin((int) 7);
+            GL11.glShadeModel(7425);
+            GL11.glBegin(7);
             glColor(topColor);
-            GL11.glVertex2f((float) x, (float) y1);
-            GL11.glVertex2f((float) x1, (float) y1);
+            GL11.glVertex2f(x, y1);
+            GL11.glVertex2f(x1, y1);
             glColor(bottomColor);
-            GL11.glVertex2f((float) x1, (float) y);
-            GL11.glVertex2f((float) x, (float) y);
+            GL11.glVertex2f(x1, y);
+            GL11.glVertex2f(x, y);
             GL11.glEnd();
-            GL11.glShadeModel((int) 7424);
+            GL11.glShadeModel(7424);
             r2DUtils.disableGL2D();
         }
 
@@ -1707,11 +1706,11 @@ public enum SmoothRenderUtils
         }
 
         public static void drawRect(float x, float y, float x1, float y1) {
-            GL11.glBegin((int) 7);
-            GL11.glVertex2f((float) x, (float) y1);
-            GL11.glVertex2f((float) x1, (float) y1);
-            GL11.glVertex2f((float) x1, (float) y);
-            GL11.glVertex2f((float) x, (float) y);
+            GL11.glBegin(7);
+            GL11.glVertex2f(x, y1);
+            GL11.glVertex2f(x1, y1);
+            GL11.glVertex2f(x1, y);
+            GL11.glVertex2f(x, y);
             GL11.glEnd();
         }
     }

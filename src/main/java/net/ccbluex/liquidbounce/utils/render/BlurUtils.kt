@@ -24,10 +24,10 @@ object BlurUtils : MinecraftInstance() {
     }
 
     fun draw(x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        if(GuiSelectPerformance.offblur) return;
-        if(FDPClientChina.RENDERLEAVE==RenderLeave.LOW) return;
-        if(FDPClientChina.RENDERLEAVE==RenderLeave.NORMAL) return;
-        if(Minecraft.getDebugFPS()<=35) return;
+        if(GuiSelectPerformance.offblur) return
+        if(FDPClientChina.RENDERLEAVE==RenderLeave.LOW) return
+        if(FDPClientChina.RENDERLEAVE==RenderLeave.NORMAL) return
+        if(Minecraft.getDebugFPS()<=35) return
         try {
 
 

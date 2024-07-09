@@ -179,14 +179,14 @@ object MovementUtils : MinecraftInstance() {
                     forward = -1.0
                 }
             }
-            val cos = Math.cos(Math.toRadians((yaw + 90.0f).toDouble()))
-            val sin = Math.sin(Math.toRadians((yaw + 90.0f).toDouble()))
+            val cos = cos(Math.toRadians((yaw + 90.0f).toDouble()))
+            val sin = sin(Math.toRadians((yaw + 90.0f).toDouble()))
             movementEvent.x = forward * moveSpeed * cos + strafe * moveSpeed * sin
             movementEvent.z = forward * moveSpeed * sin - strafe * moveSpeed * cos
         }
     }
 
-    fun calculateGround(): Double {
+    private fun calculateGround(): Double {
         val playerBoundingBox = mc.thePlayer.entityBoundingBox
         var blockHeight = 1.0
         var ground = mc.thePlayer.posY

@@ -1,8 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.hud.antiskid;
 
-import kotlin.jvm.internal.Intrinsics;
 import net.ccbluex.liquidbounce.font.FontLoaders;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.PlayerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.EntityExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;

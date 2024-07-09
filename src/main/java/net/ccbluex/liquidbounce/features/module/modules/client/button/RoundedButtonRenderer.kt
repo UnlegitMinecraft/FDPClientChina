@@ -4,10 +4,10 @@ import net.ccbluex.liquidbounce.ui.client.GuiSelectPerformance
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.NewRenderUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import org.lwjgl.opengl.GL11
-import skidunion.destiny.utils.render.NewRenderUtils
 import java.awt.Color
 
 class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {

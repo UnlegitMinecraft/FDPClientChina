@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
-import net.minecraft.potion.Potion
 
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {

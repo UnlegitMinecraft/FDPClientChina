@@ -16,7 +16,7 @@ object RegexUtils {
         return result.toTypedArray()
     }
 
-    fun match(text: String, pattern: Pattern): Array<String> {
+    private fun match(text: String, pattern: Pattern): Array<String> {
         return match(pattern.matcher(text))
     }
 

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui
 
-import com.google.common.collect.Lists
 import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD.genshinImpactAnim
 import net.ccbluex.liquidbounce.font.FontLoaders
@@ -14,19 +13,12 @@ import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.*
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
-import org.lwjgl.opengl.GLContext
 import java.awt.Color
-import java.io.BufferedReader
-import java.io.IOException
-import java.util.*
 
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {

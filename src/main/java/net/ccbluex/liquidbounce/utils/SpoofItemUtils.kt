@@ -4,8 +4,8 @@ import net.minecraft.item.ItemStack
 
 object SpoofItemUtils : MinecraftInstance() {
 
-    var spoofSlot = 0
-    var spoofing = false
+    private var spoofSlot = 0
+    private var spoofing = false
     fun startSpoof(slot : Int) {
         if (!spoofing) {
             spoofSlot = slot

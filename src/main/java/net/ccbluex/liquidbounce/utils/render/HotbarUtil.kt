@@ -6,7 +6,7 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 
-class hotbarutil {
+class HotbarUtil {
     val translate = Translate(0.0f, 0.0f)
     var size = 1.0f
 

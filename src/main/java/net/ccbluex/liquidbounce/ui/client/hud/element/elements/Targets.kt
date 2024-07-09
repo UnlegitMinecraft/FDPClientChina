@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.NewRenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -24,7 +25,6 @@ import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
-import skidunion.destiny.utils.render.NewRenderUtils
 import java.awt.Color
 import java.math.BigDecimal
 import java.text.DecimalFormat

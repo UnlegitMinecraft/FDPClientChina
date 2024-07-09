@@ -13,16 +13,13 @@ public class NotiUtils {
             trayIcon.setImageAutoSize(true);
             SystemTray.getSystemTray().add(trayIcon);
             trayIcon.displayMessage(title, text, type);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    SystemTray.getSystemTray().remove(trayIcon);
+            new Thread(() -> {
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
                 }
+                SystemTray.getSystemTray().remove(trayIcon);
             }).start();
         }
     }

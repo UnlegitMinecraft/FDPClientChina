@@ -23,7 +23,7 @@ object ShadowUtils : MinecraftInstance() {
 
     private var initFramebuffer: Framebuffer? = null
     private var frameBuffer: Framebuffer? = null
-    var resultBuffer: Framebuffer? = null
+    private var resultBuffer: Framebuffer? = null
 
     private var shaderGroup: ShaderGroup? = null
     private var lastWidth = 0
@@ -42,7 +42,7 @@ object ShadowUtils : MinecraftInstance() {
             initFramebuffer = Framebuffer(width * factor, height * factor, true)
             initFramebuffer!!.setFramebufferColor(0F, 0F, 0F, 0F)
             initFramebuffer!!.setFramebufferFilter(GL_LINEAR)
-            shaderGroup = ShaderGroup(mc.textureManager, mc.getResourceManager(), initFramebuffer, blurDirectory)
+            shaderGroup = ShaderGroup(mc.textureManager, mc.resourceManager, initFramebuffer, blurDirectory)
             shaderGroup!!.createBindFramebuffers(width * factor, height * factor)
             frameBuffer = shaderGroup!!.mainFramebuffer
             resultBuffer = shaderGroup!!.getFramebufferRaw("braindead")
@@ -72,20 +72,20 @@ object ShadowUtils : MinecraftInstance() {
         resultBuffer ?: return
         frameBuffer ?: return
 
-        mc.getFramebuffer().unbindFramebuffer()
+        mc.framebuffer.unbindFramebuffer()
         initFramebuffer!!.framebufferClear()
         resultBuffer!!.framebufferClear()
         initFramebuffer!!.bindFramebuffer(true)
         drawMethod()
         frameBuffer!!.bindFramebuffer(true)
         shaderGroup!!.loadShaderGroup(mc.timer.renderPartialTicks)
-        mc.getFramebuffer().bindFramebuffer(true)
+        mc.framebuffer.bindFramebuffer(true)
 
         val fr_width = resultBuffer!!.framebufferWidth.toDouble() / resultBuffer!!.framebufferTextureWidth.toDouble()
         val fr_height = resultBuffer!!.framebufferHeight.toDouble() / resultBuffer!!.framebufferTextureHeight.toDouble()
 
         val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.getWorldRenderer()
+        val worldrenderer = tessellator.worldRenderer
 
         glPushMatrix()
         GlStateManager.disableLighting()

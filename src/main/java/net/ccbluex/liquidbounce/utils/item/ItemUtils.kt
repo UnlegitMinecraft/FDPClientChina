@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.item
 
-import net.ccbluex.liquidbounce.utils.RegexUtils
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
@@ -63,8 +62,8 @@ object ItemUtils {
         val o1a: ItemArmor = Objects.requireNonNull(o1.itemStack.item) as ItemArmor
         val o2a: ItemArmor = Objects.requireNonNull(o2.itemStack.item) as ItemArmor
         val compare = Integer.compare(
-                o1a.getArmorMaterial().getDurability(o1a.armorType),
-                o2a.getArmorMaterial().getDurability(o2a.armorType)
+                o1a.armorMaterial.getDurability(o1a.armorType),
+                o2a.armorMaterial.getDurability(o2a.armorType)
         )
         if (compare == 0) {
             // Then durability...
@@ -118,12 +117,16 @@ object ItemUtils {
         if (stack.hasTagCompound() && stack.tagCompound.hasKey("display", 10)) {
             val display = stack.tagCompound.getCompoundTag("display")
 
-            if (goal == EnumNBTPriorityType.HAS_DISPLAY_TAG) {
-                return true
-            } else if (goal == EnumNBTPriorityType.HAS_NAME) {
-                return display.hasKey("Name")
-            } else if (goal == EnumNBTPriorityType.HAS_LORE) {
-                return display.hasKey("Lore") && display.getTagList("Lore", 8).tagCount()> 0
+            when (goal) {
+                EnumNBTPriorityType.HAS_DISPLAY_TAG -> {
+                    return true
+                }
+                EnumNBTPriorityType.HAS_NAME -> {
+                    return display.hasKey("Name")
+                }
+                EnumNBTPriorityType.HAS_LORE -> {
+                    return display.hasKey("Lore") && display.getTagList("Lore", 8).tagCount()> 0
+                }
             }
         }
 

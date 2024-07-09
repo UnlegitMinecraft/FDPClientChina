@@ -8,10 +8,10 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderWings extends ModelBase {
     Minecraft mc = Minecraft.getMinecraft();
-    private ResourceLocation location;
-    private ModelRenderer wing;
-    private ModelRenderer wingTip;
-    private boolean playerUsesFullHeight;
+    private final ResourceLocation location;
+    private final ModelRenderer wing;
+    private final ModelRenderer wingTip;
+    private final boolean playerUsesFullHeight;
 
     public RenderWings() {
         this.location = new ResourceLocation("fdpclient/wings/wings.png");
@@ -39,10 +39,10 @@ public class RenderWings extends ModelBase {
         GL11.glPushMatrix();
         GL11.glScaled(-scale, -scale, scale);
         GL11.glRotated(180.0D + rotate, 0.0D, 1.0D, 0.0D);
-        GL11.glTranslated((double) 0.0, (double) ((-(this.playerUsesFullHeight ? 1.45 : 1.25)) / scale), (double) 0.0);
+        GL11.glTranslated(0.0, (-(this.playerUsesFullHeight ? 1.45 : 1.25)) / scale, 0.0);
         GL11.glTranslated(0.0D, 0.0D, 0.2D / scale);
         if (mc.thePlayer.isSneaking()) {
-            GL11.glTranslated((double) 0.0, (double) (0.125 / scale), (double) 0.0);
+            GL11.glTranslated(0.0, 0.125 / scale, 0.0);
         }
         GL11.glColor3f(1F, 1F, 1F);
 
@@ -52,10 +52,10 @@ public class RenderWings extends ModelBase {
         for (int j = 0; j < 2; ++j) {
             GL11.glEnable(2884);
             float f11 = (float) (System.currentTimeMillis() % 1000L) / 1000.0F * 3.1415927F * 2.0F;
-            this.wing.rotateAngleX = (float) Math.toRadians(-80.0D) - (float) Math.cos((double) f11) * 0.2F;
-            this.wing.rotateAngleY = (float) Math.toRadians(20.0D) + (float) Math.sin((double) f11) * 0.4F;
+            this.wing.rotateAngleX = (float) Math.toRadians(-80.0D) - (float) Math.cos(f11) * 0.2F;
+            this.wing.rotateAngleY = (float) Math.toRadians(20.0D) + (float) Math.sin(f11) * 0.4F;
             this.wing.rotateAngleZ = (float) Math.toRadians(20.0D);
-            this.wingTip.rotateAngleZ = -((float) (Math.sin((double) (f11 + 2.0F)) + 0.5D)) * 0.75F;
+            this.wingTip.rotateAngleZ = -((float) (Math.sin(f11 + 2.0F) + 0.5D)) * 0.75F;
             this.wing.render(0.0625F);
             GL11.glScalef(-1.0F, 1.0F, 1.0F);
             if (j == 0) {

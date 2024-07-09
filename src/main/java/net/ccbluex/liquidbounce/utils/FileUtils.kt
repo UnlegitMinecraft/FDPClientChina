@@ -61,7 +61,7 @@ object FileUtils {
             toDir.mkdirs()
         }
 
-        fromDir.listFiles().forEach {
+        fromDir.listFiles()!!.forEach {
             val toFile = File(toDir, it.name)
             if (it.isDirectory) {
                 copyDir(it, toFile)

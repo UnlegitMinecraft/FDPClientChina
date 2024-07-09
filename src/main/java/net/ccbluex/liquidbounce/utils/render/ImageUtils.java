@@ -1,12 +1,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.minecraft.client.Minecraft;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 public class ImageUtils {

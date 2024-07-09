@@ -37,9 +37,9 @@ object ColorUtils {
 
     @JvmStatic
     fun StaticRainbow(speed: Int, index: Int): Color {
-        var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
+        val angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
         val hue = angle / 360f
-        return Color.getHSBColor(if ((360.0.also { (angle).toInt() } / 360.0).toFloat().toDouble() < 0.5) -(angle / 360.0).toFloat() else (angle / 360.0).toFloat(), 0.5f, 1.0f)
+        return Color.getHSBColor(if ((360.0.also { (angle) } / 360.0).toFloat().toDouble() < 0.5) -(angle / 360.0).toFloat() else (angle / 360.0).toFloat(), 0.5f, 1.0f)
     }
     fun stripColor(input: String): String {
         return COLOR_PATTERN.matcher(input).replaceAll("")
@@ -208,7 +208,7 @@ object ColorUtils {
         return Color(color1.red + ((color2.red - color1.red) * percent).toInt(), color1.green + ((color2.green - color1.green) * percent).toInt(), color1.blue + ((color2.blue - color1.blue) * percent).toInt(), color1.alpha + ((color2.alpha - color1.alpha) * percent).toInt())
     }
 
-    fun toRGB(n: Int, n2: Int, n3: Int, n4: Int): Int {
+    private fun toRGB(n: Int, n2: Int, n3: Int, n4: Int): Int {
         return (n4 and 0xFF shl 24) or (n3 and 0xFF shl 16) or (n2 and 0xFF shl 8) or (n and 0xFF)
     }
 

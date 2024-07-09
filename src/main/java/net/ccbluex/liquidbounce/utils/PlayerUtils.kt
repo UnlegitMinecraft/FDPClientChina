@@ -23,7 +23,7 @@ object PlayerUtils {
         return stringBuilder.toString()
     }
     fun getAr(player : EntityLivingBase):Double{
-        var arPercentage: Double = (player!!.totalArmorValue / player!!.maxHealth).toDouble()
+        var arPercentage: Double = (player.totalArmorValue / player.maxHealth).toDouble()
         arPercentage = MathHelper.clamp_double(arPercentage, 0.0, 1.0)
         return 100 * arPercentage
     }
@@ -44,7 +44,7 @@ object PlayerUtils {
         if (mc.thePlayer.posY < 0) return false
         var off = 0
         while (off < mc.thePlayer.posY.toInt() + 2) {
-            val bb: AxisAlignedBB = mc.thePlayer.getEntityBoundingBox()
+            val bb: AxisAlignedBB = mc.thePlayer.entityBoundingBox
                 .offset(0.0, -off.toDouble(), 0.0)
             if (mc.theWorld.getCollidingBoundingBoxes(
                     mc.thePlayer,

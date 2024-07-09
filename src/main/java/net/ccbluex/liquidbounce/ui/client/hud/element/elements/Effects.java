@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element;
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.ui.realpha;
 import net.ccbluex.liquidbounce.utils.Translate;
+import net.ccbluex.liquidbounce.utils.render.NewRenderUtils;
 import net.ccbluex.liquidbounce.utils.render.PotionData;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,7 +16,6 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-import skidunion.destiny.utils.render.NewRenderUtils;
 
 import java.awt.*;
 import java.util.HashMap;

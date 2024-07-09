@@ -2,10 +2,10 @@ package net.ccbluex.liquidbounce.utils.render
 
 class Animation(
     val type: EaseUtils.EnumEasingType,
-    val order: EaseUtils.EnumEasingOrder,
+    private val order: EaseUtils.EnumEasingOrder,
     val from: Double,
     val to: Double,
-    val duration: Long
+    private val duration: Long
 ) {
     var state = EnumAnimationState.NOT_STARTED
 

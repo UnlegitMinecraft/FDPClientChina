@@ -12,7 +12,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.BlockPos;
 
 public class MoveUtils {
-	private static Minecraft mc = Minecraft.getMinecraft();
+	private static final Minecraft mc = Minecraft.getMinecraft();
 	public static void setMotionWithValues(double speed, float yaw, double forward, double strafe) {
 		if (forward == 0.0D && strafe == 0.0D) {
 			mc.thePlayer.motionX = 0.0D;
@@ -36,12 +36,8 @@ public class MoveUtils {
 		}
 	}
 	public static boolean isOnGround(double height) {
-		if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0D, -height, 0.0D))
-				.isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+        return !mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0D, -height, 0.0D))
+                .isEmpty();
 	}
 
 	public static int getSpeedEffect() {
@@ -211,13 +207,13 @@ public class MoveUtils {
 				} else if (forward < 0.0) {
 					forward = -1.0;
 				}
-			}
+            }
+            mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0f))
+                    + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f)) + shift;
 //			Helper.sendMessage(shift);
-			mc.thePlayer.motionX = forward * speed * Math.cos((double) Math.toRadians((double) (yaw + 90.0f)))
-					+ strafe * speed * Math.sin((double) Math.toRadians((double) (yaw + 90.0f))) + shift;
 
-			mc.thePlayer.motionZ = forward * speed * Math.sin((double) Math.toRadians((double) (yaw + 90.0f)))
-					- strafe * speed * Math.cos((double) Math.toRadians((double) (yaw + 90.0f))) - shift;
+            mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f))
+					- strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)) - shift;
 		}
 	}
 	
@@ -244,11 +240,11 @@ public class MoveUtils {
 				}
 			}
 //			Helper.sendMessage(shift);
-			mc.thePlayer.motionX = forward * speed * Math.cos((double) Math.toRadians((double) (yaw + 90.0f)))
-					+ strafe * speed * Math.sin((double) Math.toRadians((double) (yaw + 90.0f)));
+			mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0f))
+					+ strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f));
 
-			mc.thePlayer.motionZ = forward * speed * Math.sin((double) Math.toRadians((double) (yaw + 90.0f)))
-					- strafe * speed * Math.cos((double) Math.toRadians((double) (yaw + 90.0f)));
+			mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f))
+					- strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f));
 		}
 	}
 
@@ -264,14 +260,14 @@ public class MoveUtils {
 	public static double getJumpBoostModifier(double baseJumpHeight) {
 		if (MoveUtils.mc.thePlayer.isPotionActive(Potion.jump)) {
 			int amplifier = MoveUtils.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier();
-			baseJumpHeight += (double) ((float) (amplifier + 1) * 0.1f);
+			baseJumpHeight += (float) (amplifier + 1) * 0.1f;
 		}
 		return baseJumpHeight;
 	}
 	public static double getJumpBoostModifier(double baseJumpHeight,boolean a) {
 		if (a) {
 			int amplifier = MoveUtils.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier();
-			baseJumpHeight += (double) ((float) (amplifier + 1) * 0.1f);
+			baseJumpHeight += (float) (amplifier + 1) * 0.1f;
 		}
 		return baseJumpHeight;
 	}
@@ -285,10 +281,10 @@ public class MoveUtils {
 		}
 		boolean var1 = false;
 		int var2 = (int) MoveUtils.mc.thePlayer.getEntityBoundingBox().minY;
-		for (double var3 = Math.floor((double) MoveUtils.mc.thePlayer.getEntityBoundingBox().minX); var3 < Math
-				.floor((double) MoveUtils.mc.thePlayer.getEntityBoundingBox().maxX) + 1; ++var3) {
-			for (double var4 = Math.floor((double) MoveUtils.mc.thePlayer.getEntityBoundingBox().minZ); var4 < Math
-					.floor((double) MoveUtils.mc.thePlayer.getEntityBoundingBox().maxZ) + 1; ++var4) {
+		for (double var3 = Math.floor(MoveUtils.mc.thePlayer.getEntityBoundingBox().minX); var3 < Math
+				.floor(MoveUtils.mc.thePlayer.getEntityBoundingBox().maxX) + 1; ++var3) {
+			for (double var4 = Math.floor(MoveUtils.mc.thePlayer.getEntityBoundingBox().minZ); var4 < Math
+					.floor(MoveUtils.mc.thePlayer.getEntityBoundingBox().maxZ) + 1; ++var4) {
 				Block var5 = MoveUtils.mc.theWorld.getBlockState(new BlockPos(var3, var2, var4)).getBlock();
 				if (var5 == null || var5.getMaterial() == Material.air)
 					continue;
@@ -331,13 +327,10 @@ public class MoveUtils {
 	}
 
 	public static boolean MovementInput() {
-		if (!(mc.gameSettings.keyBindForward.pressed || mc.gameSettings.keyBindLeft.pressed
-				|| mc.gameSettings.keyBindRight.pressed
-				|| mc.gameSettings.keyBindBack.pressed)) {
-			return false;
-		}
-		return true;
-	}
+        return mc.gameSettings.keyBindForward.pressed || mc.gameSettings.keyBindLeft.pressed
+                || mc.gameSettings.keyBindRight.pressed
+                || mc.gameSettings.keyBindBack.pressed;
+    }
 
 	public static boolean isAirUnder(Entity ent) {
 		return mc.theWorld.getBlockState(new BlockPos(ent.posX, ent.posY - 1.0, ent.posZ))

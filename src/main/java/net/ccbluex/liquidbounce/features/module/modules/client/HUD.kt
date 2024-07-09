@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.utils.RenderUtil
 import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
@@ -16,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButto
 import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
 import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.utils.RenderUtil
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils

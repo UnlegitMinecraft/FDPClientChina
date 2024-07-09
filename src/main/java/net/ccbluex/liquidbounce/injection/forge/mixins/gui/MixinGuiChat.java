@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.launch.options.FancyUiLaunchOption;
+import net.ccbluex.liquidbounce.utils.render.NewRenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -20,7 +21,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import skidunion.destiny.utils.render.NewRenderUtils;
 
 import java.awt.*;
 import java.util.Arrays;

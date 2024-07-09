@@ -5,14 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.util.MathHelper
 
 @ModuleInfo(name = "StrafeFix", category = ModuleCategory.MOVEMENT)
