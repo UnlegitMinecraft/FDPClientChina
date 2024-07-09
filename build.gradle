@@ -13,7 +13,7 @@ repositories {
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://fdpclient.club/" }
-    maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
+    maven { url = "http://lss233.littleservice.cn/repositories/minecraft/" }
     maven { url = "https://maven.minecraftforge.net/" }
 }
 
@@ -62,10 +62,6 @@ dependencies {
         exclude module: "commons-compress" // minecraft have a old version of this library
         exclude module: "jogl-all" // we use lwjgl
         exclude module: "gluegen-rt" // this is the library for joal
-    }
-    include("com.github.UnlegitMinecraft:FuckPCL:2.0") {
-        exclude module: "kotlin-stdlib-jdk8"
-        exclude module: "jna-platform"
     }
     include("com.jagrosh:DiscordIPC:0.4")
     include("com.github.CCBlueX:Elixir:1.2.4") {
