@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.cef
 
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.IProgressHandler
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.Render2DEvent
@@ -33,14 +33,14 @@ object CefRenderManager : Listenable {
         private set
     lateinit var cefMessageRouter: CefMessageRouter
 
-    private val dataDir = File(LiquidBounce.fileManager.cacheDir, "cef")
-    private val cacheDir = File(LiquidBounce.fileManager.cacheDir, "cef_cache")
+    private val dataDir = File(FDPClientChina.fileManager.cacheDir, "cef")
+    private val cacheDir = File(FDPClientChina.fileManager.cacheDir, "cef_cache")
     private val cefArgs = arrayOf<String>()
 
     val browsers = mutableListOf<CefBrowserCustom>()
 
     init {
-        LiquidBounce.eventManager.registerListener(this)
+        FDPClientChina.eventManager.registerListener(this)
     }
 
     fun initializeAsync(progressHandler: IProgressHandler?) {

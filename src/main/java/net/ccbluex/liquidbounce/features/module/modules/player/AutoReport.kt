@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -99,7 +99,7 @@ class AutoReport : Module() {
                 return false
             }
 
-            val teams = LiquidBounce.moduleManager[Teams::class.java]!!
+            val teams = FDPClientChina.moduleManager[Teams::class.java]!!
             return !teams.state || !teams.isInYourTeam(entity)
         }
 

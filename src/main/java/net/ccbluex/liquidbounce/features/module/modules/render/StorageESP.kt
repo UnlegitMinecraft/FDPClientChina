@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -99,9 +99,9 @@ class StorageESP : Module() {
             "shaderglow" -> GlowShader.GLOW_SHADER
             else -> return
         }
-        if(LiquidBounce.RENDERLEAVE== RenderLeave.LOW){
+        if(FDPClientChina.RENDERLEAVE== RenderLeave.LOW){
             this.state=false;
-            LiquidBounce.hud.addNotification(Notification("Performance", "For performance, don't use GLOW_SHADER or OUTLINE_SHADER style", NotifyType.WARNING))
+            FDPClientChina.hud.addNotification(Notification("Performance", "For performance, don't use GLOW_SHADER or OUTLINE_SHADER style", NotifyType.WARNING))
         }
         val entityMap: MutableMap<Color, ArrayList<TileEntity>> = HashMap()
 

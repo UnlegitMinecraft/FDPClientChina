@@ -16,8 +16,6 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 
 @ModuleInfo(name = "BorderWarn", category = ModuleCategory.MISC)
 class BorderWarn : Module() {
-    val rangeValue = IntegerValue("Range", 25, 5, 40)
-    
     val timer = MSTimer()
 
     @EventTarget

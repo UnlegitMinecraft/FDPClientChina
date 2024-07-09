@@ -1,12 +1,13 @@
 
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura.blockingStatus
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
@@ -21,6 +22,8 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.util.*
@@ -28,7 +31,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan", "GrimAC","Grim118"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -59,6 +62,8 @@ class NoSlow : Module() {
     private var nextTemp = false
     private var waitC03 = false
     private var lastBlockingStat = false
+    private var eatSlow = false
+    private var canmovedelay = false
 
     override fun onDisable() {
         msTimer.reset()
@@ -110,20 +115,18 @@ class NoSlow : Module() {
             ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aPlease notice that Vulcan/Matrix NoSlow §cDO NOT §asupport FakeLag Disabler!")
             ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aType .noslow updateAlert1 to disable this notice!")
         }
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
         if (!MovementUtils.isMoving()) {
             return
         }
 
-//        val heldItem = mc.thePlayer.heldItem
         if (modeValue.get().lowercase() == "aac5") {
-            if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
+            if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
             return
         }
         if (modeValue.get().lowercase() != "aac5") {
-            if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
+            if (!mc.thePlayer.isBlocking && !blockingStatus) {
                 return
             }
             when (modeValue.get().lowercase()) {
@@ -170,8 +173,16 @@ class NoSlow : Module() {
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer.heldItem?.item
 
-        event.forward = getMultiplier(heldItem, true)
-        event.strafe = getMultiplier(heldItem, false)
+        if (modeValue.get().lowercase() == "grim118") {
+            if (eatSlow || canmovedelay) {
+                event.strafe = 1.0f
+                event.forward = 1.0f
+            }
+        }
+        if (modeValue.get().lowercase() != "grim118") {
+            event.forward = getMultiplier(heldItem, true)
+            event.strafe = getMultiplier(heldItem, false)
+        }
     }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
@@ -189,6 +200,21 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onUpdate(event: MotionEvent) {
+
+        if(modeValue.equals("grim118")) {
+            if (event.eventState == EventState.PRE && mc.thePlayer.isUsingItem && isHoldingPotionAndSword(mc.thePlayer.heldItem,false,true)) {
+                mc.netHandler.addToSendQueue(C0EPacketClickWindow(0, 36, 0, 2, ItemStack(Item.getItemById(166)), 0))
+            }
+
+            if (!mc.thePlayer.isUsingItem && mc.thePlayer.heldItem.item is ItemSword) {
+                canmovedelay = false
+            }
+
+            if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem.item is ItemSword && event.eventState == EventState.POST) {
+                canmovedelay = true
+            }
+        }
+
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
@@ -236,11 +262,32 @@ class NoSlow : Module() {
     }
 
     private val isBlocking: Boolean
-        get() = (mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
+        get() = (mc.thePlayer.isUsingItem || blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
+
+        if(modeValue.equals("grim118")) {
+            if (mc.thePlayer.isUsingItem && isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
+                if (packet is S30PacketWindowItems) {
+                    event.cancelEvent()
+                    eatSlow = true
+                }
+                if (packet is S2FPacketSetSlot) {
+                    event.cancelEvent()
+                }
+            }
+        }
+            if (isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
+                if (packet is C08PacketPlayerBlockPlacement)
+                    eatSlow = false
+            }
+            if (isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
+                if (packet is C07PacketPlayerDigging && packet.status == C07PacketPlayerDigging.Action.RELEASE_USE_ITEM) {
+                    eatSlow = false
+                }
+            }
 
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && nextTemp) {
             if ((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
@@ -303,7 +350,29 @@ class NoSlow : Module() {
             }
         }
     }
-    
+
+    private fun isHoldingPotionAndSword(stack: ItemStack?, checkSword: Boolean, checkPotionFood: Boolean): Boolean {
+        if (stack == null) {
+            return false
+        }
+        if (stack.item is ItemAppleGold && checkPotionFood) {
+            return true
+        }
+        if (stack.item is ItemPotion && checkPotionFood) {
+            return !ItemPotion.isSplash(stack.metadata)
+        }
+        if (stack.item is ItemFood && checkPotionFood) {
+            return true
+        }
+        if (stack.item is ItemSword && checkSword) {
+            return true
+        }
+        if (stack.item is ItemBow) {
+            return checkPotionFood
+        }
+        return stack.item is ItemBucketMilk && checkPotionFood
+    }
+
     override val tag: String
         get() = modeValue.get()
 }

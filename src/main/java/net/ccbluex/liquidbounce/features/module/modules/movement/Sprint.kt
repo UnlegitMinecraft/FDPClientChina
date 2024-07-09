@@ -22,80 +22,108 @@ import net.minecraft.potion.Potion
 
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
-    val jumpDirectionsValue = BoolValue("JumpDirection", true)
-    val allDirectionsValue = BoolValue("AllDirections", true)
-    private val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "Toggle", "Minemora", "Spoof", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
-    private val blindnessValue = BoolValue("Blindness", true)
+
     val useItemValue = BoolValue("UseItem", false)
-    val foodValue = BoolValue("Food", true)
-    val noStopServerSide = BoolValue("ServerSideKeepSprint", false).displayable { !noPacket.get() }
-    val checkServerSide = BoolValue("CheckServerSide", false)
-    val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
-    private val noPacket = BoolValue("NoPacket", false)
+    val useItemSwordValue = BoolValue("UseItemOnlySword", false).displayable{ useItemValue.get() }
+    val hungryValue = BoolValue("Hungry", false)
+    val sneakValue = BoolValue("Sneak", false)
+    val collideValue = BoolValue("Collide", false)
+    val allDirectionsValue = BoolValue("AllDirections", false)
+    val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "RotateSpoof", "Toggle", "Spoof", "SpamSprint", "NoStopSprint", "Minemora", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed", 0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
-
-    private var spoofStat = false
-        set(value) {
-            if (field != value) {
-                if (value) {
-                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
-                } else {
-                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
-                }
-                field = value
-            }
-        }
+    private val noPacketValue = BoolValue("NoPackets", false)
+    var switchStat = false
+    var forceSprint = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer.isSprinting = true
-
-        if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking || blindnessValue.get() &&
-                mc.thePlayer.isPotionActive(Potion.blindness) || foodValue.get() &&
-                !(mc.thePlayer.foodStats.foodLevel > 6.0f || mc.thePlayer.capabilities.allowFlying) ||
-                (useItemValue.get() && mc.thePlayer.isUsingItem) ||
-                (checkServerSide.get() && (mc.thePlayer.onGround || !checkServerSideGround.get()) &&
-                        !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
-                        RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)) {
-            mc.thePlayer.isSprinting = false
-            return
-        }
-
         if (allDirectionsValue.get()) {
-            mc.thePlayer.isSprinting = true
-            if (RotationUtils.getRotationDifference(Rotation((MovementUtils.direction * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30) {
-                when (allDirectionsBypassValue.get().lowercase()) {
-                    "rotate" -> RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), 10)
-                    "toggle" -> {
+            when(allDirectionsBypassValue.get()) {
+                "NoStopSprint" -> {
+                    forceSprint = true
+                }
+                "SpamSprint" -> {
+                    forceSprint = true
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                }
+                "Spoof" -> {
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                    switchStat = true
+                }
+            }
+            if (RotationUtils.getRotationDifference(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30) {
+                when(allDirectionsBypassValue.get()) {
+                    "Rotate" -> RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), 2)
+                    "RotateSpoof" -> {
+                        switchStat = !switchStat
+                        if (switchStat) {
+                            RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch))
+                        }
+                    }
+                    "Toggle" -> {
                         mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                         mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
                     }
-                    "minemora" -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
-                    "limitspeed" -> {
+                    "Minemora" -> {
+                        if (mc.thePlayer.onGround && RotationUtils.getRotationDifference(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch)) > 60) {
+                            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
+                            mc.thePlayer.motionY = 0.0
+                        }
+                    }
+                    "LimitSpeed" -> {
                         if (!allDirectionsLimitSpeedGround.get() || mc.thePlayer.onGround) {
                             MovementUtils.limitSpeedByPercent(allDirectionsLimitSpeedValue.get())
                         }
                     }
-                    "spoof" -> spoofStat = true
-                }
-            } else {
-                when (allDirectionsBypassValue.get().lowercase()) {
-                    "spoof" -> spoofStat = false
                 }
             }
+        } else {
+            switchStat = false
+            forceSprint = false
         }
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-
-        if (noPacket.get() && packet is C0BPacketEntityAction && (packet.action == C0BPacketEntityAction.Action.START_SPRINTING || packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING)) {
-            event.cancelEvent()
-        }
-        if (noStopServerSide.get() && packet is C0BPacketEntityAction && packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
-            event.cancelEvent()
+        if (packet is C0BPacketEntityAction) {
+            if (allDirectionsValue.get()) {
+                when(allDirectionsBypassValue.get()) {
+                    "SpamSprint", "NoStopSprint" -> {
+                        if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
+                            event.cancelEvent()
+                        }
+                    }
+                    "Toggle" -> {
+                        if (switchStat) {
+                            if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
+                                event.cancelEvent()
+                            } else {
+                                switchStat = !switchStat
+                            }
+                        } else {
+                            if (packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
+                                event.cancelEvent()
+                            } else {
+                                switchStat = !switchStat
+                            }
+                        }
+                    }
+                    "Spoof" -> {
+                        if (switchStat) {
+                            if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
+                                event.cancelEvent()
+                            }
+                        }
+                    }
+                }
+            }
+            if (noPacketValue.get() && !event.isCancelled) {
+                if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
+                    event.cancelEvent()
+                }
+            }
         }
     }
 }

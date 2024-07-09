@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -53,7 +53,7 @@ class AutoIgnore : Module() {
 
                 if (chatVL[name]!!> vlValue.get()) {
                     mc.thePlayer.sendChatMessage("/ignorar add $name")
-                    LiquidBounce.hud.addNotification(Notification(this.name, "$name ignored for spamming...", NotifyType.INFO, time = 1500))
+                    FDPClientChina.hud.addNotification(Notification(this.name, "$name ignored for spamming...", NotifyType.INFO, time = 1500))
                     blockedPlayer.add(name.lowercase())
                     event.cancelEvent()
                 }

@@ -29,8 +29,8 @@ import org.lwjgl.input.Keyboard
 class InventoryMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
-    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "None"), "None")
-    private val rotateValue = BoolValue("Rotate", true)
+    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "Pulse", "None"), "None")
+    private val rotateValue = BoolValue("Rotate", false)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
     val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
 
@@ -41,14 +41,11 @@ class InventoryMove : Module() {
     var invOpen = false
         private set
 
+    private var isInv = false
+
     private fun updateKeyState() {
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
-            mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
-            mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
-            mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
-            mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
-            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-            mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
+            MovementUtils.updateControls()
 
             if (rotateValue.get()) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
@@ -120,12 +117,15 @@ class InventoryMove : Module() {
             "packetinv" -> {
                 if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                     event.cancelEvent()
+                    isInv = true
                 }
                 if (packet is C0DPacketCloseWindow) {
                     event.cancelEvent()
+                    isInv = false
                 }
 
                 if (packet is C0EPacketClickWindow) {
+                    if (isInv) return
                     packetListYes.clear()
                     packetListYes.add(packet)
 
@@ -158,6 +158,25 @@ class InventoryMove : Module() {
                         }
                         blinkPacketList.clear()
                     }
+                }
+            }
+            "pulse" -> {
+                if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
+                    event.cancelEvent()
+                    packetListYes.clear()
+                }
+                if (packet is C0EPacketClickWindow) {
+                    packetListYes.add(packet)
+                    event.cancelEvent()
+                }
+                if (packet is C0DPacketCloseWindow) {
+                    event.cancelEvent()
+                    PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    packetListYes.forEach {
+                        PacketUtils.sendPacketNoEvent(it)
+                    }
+                    packetListYes.clear()
+                    PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
                 }
             }
         }

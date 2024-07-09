@@ -1,7 +1,7 @@
 /*
- * FDPClient Hacked Client
+ * FDPClientChina Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * https://github.com/SkidderMC/FDPClientChina/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -18,13 +18,9 @@ import net.minecraft.util.MathHelper
 @ModuleInfo(name = "StrafeFix", category = ModuleCategory.MOVEMENT)
 object StrafeFix : Module() {
 
-    val silentFixVaule = BoolValue("Silent", true)
+    //Thank Co Dynamic
 
-    /**
-     * Strafe Fix
-     * Code by Co Dynamic
-     * Date: 2023/02/15
-     */
+    val silentFixVaule = BoolValue("Silent", true)
 
     var silentFix = false
     var doFix = false
@@ -65,7 +61,6 @@ object StrafeFix : Module() {
         var factor = strafe * strafe + forward * forward
 
         var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
-        //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
         var calcYaw = if(isSilent) { yaw + 45.0f * angleDiff.toFloat() } else yaw
 
         var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()

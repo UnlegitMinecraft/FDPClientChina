@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -250,9 +250,9 @@ class ESP : Module() {
         val partialTicks = event.partialTicks
 
         if (mode.equals("jello", ignoreCase = true)) {
-            if(LiquidBounce.RENDERLEAVE== RenderLeave.LOW){
+            if(FDPClientChina.RENDERLEAVE== RenderLeave.LOW){
                 this.state=false;
-                LiquidBounce.hud.addNotification(Notification("Performance", "For performance, don't use jello style ESP", NotifyType.WARNING))
+                FDPClientChina.hud.addNotification(Notification("Performance", "For performance, don't use jello style ESP", NotifyType.WARNING))
             }
             val hurtingEntities = ArrayList<EntityLivingBase>()
             var shader: FramebufferShader = GlowShader.GLOW_SHADER
@@ -316,9 +316,9 @@ class ESP : Module() {
                 entityMap[color]!!.add(entityLiving)
             }
         }
-        if(LiquidBounce.RENDERLEAVE== RenderLeave.LOW){
+        if(FDPClientChina.RENDERLEAVE== RenderLeave.LOW){
             this.state=false;
-            LiquidBounce.hud.addNotification(Notification("Performance", "For performance, don't use GLOW_SHADER or OUTLINE_SHADER style ESP", NotifyType.WARNING))
+            FDPClientChina.hud.addNotification(Notification("Performance", "For performance, don't use GLOW_SHADER or OUTLINE_SHADER style ESP", NotifyType.WARNING))
         }
         // draw
         for ((key, value) in entityMap) {

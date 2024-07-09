@@ -5,14 +5,12 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.module.modules.client.PerformanceLevel;
 import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.ui.client.GuiSelectPerformance;
-import net.ccbluex.liquidbounce.utils.NotiUtils;
 import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -24,7 +22,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatStyle;
@@ -39,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,7 +69,7 @@ public abstract class MixinGuiScreen {
     @Inject(method = "drawWorldBackground", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         try {
-            final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+            final HUD hud = FDPClientChina.moduleManager.getModule(HUD.class);
             if (hud.getInventoryParticle().get() && mc.thePlayer != null) {
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
             }
@@ -83,11 +79,11 @@ public abstract class MixinGuiScreen {
                 int defaultWidth1 = (this.width);
                 GL11.glPushMatrix();
                 if (HUD.INSTANCE.getGenshinImpactAnim().get())
-                    RenderUtils.drawImage(LiquidBounce.INSTANCE.getLumine(), 10, defaultHeight1 - (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1));
+                    RenderUtils.drawImage(FDPClientChina.INSTANCE.getLumine(), 10, defaultHeight1 - (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1));
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                FontLoaders.F30.DisplayFont2(FontLoaders.F30, LiquidBounce.CLIENT_NAME, defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, LiquidBounce.CLIENT_NAME), defaultHeight1 - 23.5f, new Color(255, 255, 255, 140).getRGB(), true);
-                FontLoaders.F30.DisplayFont2(FontLoaders.F14, LiquidBounce.CLIENT_VERSION, defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION), defaultHeight1 - 15f, new Color(255, 255, 255, 140).getRGB(), true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F30, FDPClientChina.CLIENT_NAME, defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClientChina.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, FDPClientChina.CLIENT_NAME), defaultHeight1 - 23.5f, new Color(255, 255, 255, 140).getRGB(), true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F14, FDPClientChina.CLIENT_VERSION, defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClientChina.CLIENT_VERSION), defaultHeight1 - 15f, new Color(255, 255, 255, 140).getRGB(), true);
                 GL11.glPopMatrix();
             }
         } catch (Exception e) {
@@ -106,11 +102,11 @@ public abstract class MixinGuiScreen {
                 int defaultWidth1 = (this.width);
                 GL11.glPushMatrix();
                 if (HUD.INSTANCE.getGenshinImpactAnim().get())
-                    RenderUtils.drawImage(LiquidBounce.INSTANCE.getLumine(), 10, defaultHeight1 - (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1));
+                    RenderUtils.drawImage(FDPClientChina.INSTANCE.getLumine(), 10, defaultHeight1 - (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1));
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                FontLoaders.F30.DisplayFont2(FontLoaders.F30, LiquidBounce.CLIENT_NAME, defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, LiquidBounce.CLIENT_NAME), defaultHeight1 - 23.5f, new Color(255, 255, 255, 140).getRGB(), true);
-                FontLoaders.F30.DisplayFont2(FontLoaders.F14, LiquidBounce.CLIENT_VERSION, defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION), defaultHeight1 - 15f, new Color(255, 255, 255, 140).getRGB(), true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F30, FDPClientChina.CLIENT_NAME, defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClientChina.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, FDPClientChina.CLIENT_NAME), defaultHeight1 - 23.5f, new Color(255, 255, 255, 140).getRGB(), true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F14, FDPClientChina.CLIENT_VERSION, defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClientChina.CLIENT_VERSION), defaultHeight1 - 15f, new Color(255, 255, 255, 140).getRGB(), true);
                 GL11.glPopMatrix();
             }
         } catch (Exception e) {
@@ -247,10 +243,10 @@ public abstract class MixinGuiScreen {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         if (GuiBackground.Companion.getEnabled()) {
-            if (LiquidBounce.INSTANCE.getBackground() == null) {
+            if (FDPClientChina.INSTANCE.getBackground() == null) {
                 GradientBackground.INSTANCE.draw(width, height);
             } else {
-                mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
+                mc.getTextureManager().bindTexture(FDPClientChina.INSTANCE.getBackground());
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             }
             if (GuiBackground.Companion.getBlur() && !GuiSelectPerformance.offblur) {

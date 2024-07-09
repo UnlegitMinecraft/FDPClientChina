@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 
@@ -137,7 +137,7 @@ public class Metrics {
 
         data.addProperty("playerAmount", minecraft.thePlayer == null ? 0 : 1);
         data.addProperty("onlineMode", minecraft.session.getSessionType() != Session.Type.LEGACY);
-        data.addProperty("bukkitVersion", LiquidBounce.MINECRAFT_VERSION);
+        data.addProperty("bukkitVersion", FDPClientChina.MINECRAFT_VERSION);
         data.addProperty("bukkitName", name);
 
         data.addProperty("javaVersion", javaVersion);

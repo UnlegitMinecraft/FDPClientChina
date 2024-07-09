@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.font.CFontRenderer;
 import net.ccbluex.liquidbounce.font.FontLoaders;
@@ -82,35 +82,35 @@ public class GuiScriptLoadMenu extends GuiScreen {
         if (menuType == ScriptMenuType.Local) {
             if (mouseX > x + 450 && mouseX < x + 490 && mouseY > y + 280 && mouseY < y + 295) {
                 long startTime = System.currentTimeMillis();
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Reloading Scripts..", NotifyType.INFO, 1500, 500));
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Reloading Scripts..", NotifyType.INFO, 1500, 500));
 
-                LiquidBounce.scriptManager.disableScripts();
-                LiquidBounce.scriptManager.unloadScripts();
+                FDPClientChina.scriptManager.disableScripts();
+                FDPClientChina.scriptManager.unloadScripts();
                 for (ScriptSubscribe scriptSubscribe : Subscriptions.subscribes) {
                     scriptSubscribe.load();
                 }
-                LiquidBounce.scriptManager.loadScripts();
-                LiquidBounce.scriptManager.enableScripts();
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Reload Successful (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
+                FDPClientChina.scriptManager.loadScripts();
+                FDPClientChina.scriptManager.enableScripts();
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Reload Successful (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
             }
             if (mouseX > x + 405 && mouseX < x + 445 && mouseY > y + 280 && mouseY < y + 295) {
-                LiquidBounce.scriptManager.disableScripts();
-                LiquidBounce.scriptManager.unloadScripts();
+                FDPClientChina.scriptManager.disableScripts();
+                FDPClientChina.scriptManager.unloadScripts();
             }
             int i = 0;
             try {
                 List<Script> scriptList = new ArrayList<>();
-                LiquidBounce.scriptManager.getScripts().stream().filter(script -> !script.isOnline()).forEach(scriptList::add);
+                FDPClientChina.scriptManager.getScripts().stream().filter(script -> !script.isOnline()).forEach(scriptList::add);
                 for (Script script : scriptList) {
                     if (x + 450 < mouseX && y + 41 - scroll + (i * 30) < mouseY && mouseX < x + 490 && mouseY < y - scroll + 59 + (i * 30)) {
                         if (script.getState()) {
-                            LiquidBounce.hud.addNotification(new Notification("Script Manager", "Unload " + script.scriptName, NotifyType.INFO, 1500, 500));
+                            FDPClientChina.hud.addNotification(new Notification("Script Manager", "Unload " + script.scriptName, NotifyType.INFO, 1500, 500));
                             for (Module registeredModule : script.getRegisteredModules()) {
                                 registeredModule.setState(false);
                             }
                             script.onDisable();
                         } else {
-                            LiquidBounce.hud.addNotification(new Notification("Script Manager", "Load " + script.scriptName, NotifyType.INFO, 1500, 500));
+                            FDPClientChina.hud.addNotification(new Notification("Script Manager", "Load " + script.scriptName, NotifyType.INFO, 1500, 500));
                             script.onEnable();
                             script.regAnyThing();
                         }
@@ -129,37 +129,37 @@ public class GuiScriptLoadMenu extends GuiScreen {
         } else if (menuType == ScriptMenuType.Online) {
             if (mouseX > x + 450 && mouseX < x + 490 && mouseY > y + 280 && mouseY < y + 295) {
                 long startTime = System.currentTimeMillis();
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Reloading Scripts..", NotifyType.INFO, 1500, 500));
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Reloading Scripts..", NotifyType.INFO, 1500, 500));
 
-                LiquidBounce.scriptManager.disableScripts();
-                LiquidBounce.scriptManager.unloadScripts();
+                FDPClientChina.scriptManager.disableScripts();
+                FDPClientChina.scriptManager.unloadScripts();
                 for (ScriptSubscribe scriptSubscribe : Subscriptions.subscribes) {
                     scriptSubscribe.load();
                 }
-                LiquidBounce.scriptManager.loadScripts();
-                LiquidBounce.scriptManager.enableScripts();
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Reload Successful (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
+                FDPClientChina.scriptManager.loadScripts();
+                FDPClientChina.scriptManager.enableScripts();
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Reload Successful (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
             }
             if (mouseX > x + 405 && mouseX < x + 445 && mouseY > y + 280 && mouseY < y + 295) {
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Unload Scripts", NotifyType.INFO, 1500, 500));
-                LiquidBounce.scriptManager.disableScripts();
-                LiquidBounce.scriptManager.unloadScripts();
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Unload Scripts", NotifyType.INFO, 1500, 500));
+                FDPClientChina.scriptManager.disableScripts();
+                FDPClientChina.scriptManager.unloadScripts();
             }
             int i = 0;
             try {
                 List<Script> scriptList = new ArrayList<>();
-                LiquidBounce.scriptManager.getScripts().stream().filter(Script::isOnline).forEach(scriptList::add);
+                FDPClientChina.scriptManager.getScripts().stream().filter(Script::isOnline).forEach(scriptList::add);
                 for (Script script : scriptList) {
                     if (x + 450 < mouseX && y + 41 - scroll + (i * 30) < mouseY && mouseX < x + 490 && mouseY < y - scroll + 59 + (i * 30)) {
                         if (script.getState()) {
-                            LiquidBounce.hud.addNotification(new Notification("Script Manager", "Unload " + script.scriptName, NotifyType.INFO, 1500, 500));
+                            FDPClientChina.hud.addNotification(new Notification("Script Manager", "Unload " + script.scriptName, NotifyType.INFO, 1500, 500));
 
                             for (Module registeredModule : script.getRegisteredModules()) {
                                 registeredModule.setState(false);
                             }
                             script.onDisable();
                         } else {
-                            LiquidBounce.hud.addNotification(new Notification("Script Manager", "Load " + script.scriptName, NotifyType.INFO, 1500, 500));
+                            FDPClientChina.hud.addNotification(new Notification("Script Manager", "Load " + script.scriptName, NotifyType.INFO, 1500, 500));
                             script.onEnable();
                             script.regAnyThing();
                         }
@@ -186,13 +186,13 @@ public class GuiScriptLoadMenu extends GuiScreen {
                     if (x + 450 < mouseX && y + 41 - scroll + (i * 30) < mouseY && mouseX < x + 490 && mouseY < y - scroll + 59 + (i * 30)) {
                         script.state = !script.state;
                         scriptList.remove(script);
-                        LiquidBounce.scriptManager.disableScripts();
-                        LiquidBounce.scriptManager.unloadScripts();
+                        FDPClientChina.scriptManager.disableScripts();
+                        FDPClientChina.scriptManager.unloadScripts();
                         for (ScriptSubscribe scriptSubscribe : Subscriptions.subscribes) {
                             scriptSubscribe.load();
                         }
-                        LiquidBounce.scriptManager.loadScripts();
-                        LiquidBounce.scriptManager.enableScripts();
+                        FDPClientChina.scriptManager.loadScripts();
+                        FDPClientChina.scriptManager.enableScripts();
                     }
                     i++;
                 }
@@ -222,15 +222,15 @@ public class GuiScriptLoadMenu extends GuiScreen {
                 String name = JOptionPane.showInputDialog(null, "What name do you want to give this Subscribe (can be left blank)", "FDP Script Cloud", JOptionPane.WARNING_MESSAGE);
                 Subscriptions.addSubscribes(new ScriptSubscribe(url, name));
                 long startTime = System.currentTimeMillis();
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Reloading Scripts...", NotifyType.INFO, 1500, 500));
-                LiquidBounce.scriptManager.disableScripts();
-                LiquidBounce.scriptManager.unloadScripts();
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Reloading Scripts...", NotifyType.INFO, 1500, 500));
+                FDPClientChina.scriptManager.disableScripts();
+                FDPClientChina.scriptManager.unloadScripts();
                 for (ScriptSubscribe scriptSubscribe : Subscriptions.subscribes) {
                     scriptSubscribe.load();
                 }
-                LiquidBounce.scriptManager.loadScripts();
-                LiquidBounce.scriptManager.enableScripts();
-                LiquidBounce.hud.addNotification(new Notification("Script Manager", "Added Subscribe: " + name + " | " + url + " (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
+                FDPClientChina.scriptManager.loadScripts();
+                FDPClientChina.scriptManager.enableScripts();
+                FDPClientChina.hud.addNotification(new Notification("Script Manager", "Added Subscribe: " + name + " | " + url + " (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
                 isClickSub = false;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -271,7 +271,7 @@ public class GuiScriptLoadMenu extends GuiScreen {
         }
         if (menuType == ScriptMenuType.Local) {
             List<Script> scriptList = new ArrayList<>();
-            LiquidBounce.scriptManager.getScripts().stream().filter(script -> !script.isOnline()).forEach(scriptList::add);
+            FDPClientChina.scriptManager.getScripts().stream().filter(script -> !script.isOnline()).forEach(scriptList::add);
             if (scroll >= (scriptList.size() * 30) - 230 && !(mouseX > x - 2 && mouseX < x + 450 && mouseY > y - 2 && mouseY < y + 20)) {
                 scroll = (scriptList.size() * 30) - 230;
                 if (timer1.hasTimePassed(100) && scroll >= (scriptList.size() * 30) - 230) {
@@ -280,7 +280,7 @@ public class GuiScriptLoadMenu extends GuiScreen {
             }
         } else if (menuType == ScriptMenuType.Online) {
             List<Script> scriptList = new ArrayList<>();
-            LiquidBounce.scriptManager.getScripts().stream().filter(Script::isOnline).forEach(scriptList::add);
+            FDPClientChina.scriptManager.getScripts().stream().filter(Script::isOnline).forEach(scriptList::add);
             if (scroll >= (scriptList.size() * 30) - 230 && !(mouseX > x - 2 && mouseX < x + 450 && mouseY > y - 2 && mouseY < y + 20)) {
                 scroll = (scriptList.size() * 30) - 230;
                 if (timer1.hasTimePassed(100) && scroll >= (scriptList.size() * 30) - 230) {
@@ -332,7 +332,7 @@ public class GuiScriptLoadMenu extends GuiScreen {
             GL11.glEnable(3089);
             RenderUtils.makeScissorBox(x + 120, y + 20, x + 500, y + 275);
             List<Script> scriptList = new ArrayList<>();
-            LiquidBounce.scriptManager.getScripts().stream().filter(script -> !script.isOnline()).forEach(scriptList::add);
+            FDPClientChina.scriptManager.getScripts().stream().filter(script -> !script.isOnline()).forEach(scriptList::add);
             for (Script script : scriptList) {
                 CFontRenderer.DisplayFonts(FontLoaders.C18, script.scriptName, x + 134, y - scroll + 40 + (i * 30), script.getState() ? new Color(255, 255, 255).getRGB() : new Color(180, 180, 180).getRGB());
                 StringBuilder authors = new StringBuilder();
@@ -381,14 +381,14 @@ public class GuiScriptLoadMenu extends GuiScreen {
             SmoothRenderUtils.drawRoundRect(x + 136, y + 79, x + 484, y + 129, 2f, new Color(24, 24, 24, 255).getRGB());
             RenderUtils.drawRect(x + 145, y + 75, x + 170, y + 85, new Color(24, 24, 24, 255).getRGB());
             CFontRenderer.DisplayFonts(FontLoaders.C16, "Info", x + 148, y + 75, new Color(255, 255, 255).getRGB());
-            CFontRenderer.DisplayFonts(FontLoaders.C16, "Loaded " + LiquidBounce.scriptManager.getScripts().size() + " Local scripts", x + 145, y + 85, new Color(217, 217, 217).getRGB());
+            CFontRenderer.DisplayFonts(FontLoaders.C16, "Loaded " + FDPClientChina.scriptManager.getScripts().size() + " Local scripts", x + 145, y + 85, new Color(217, 217, 217).getRGB());
             CFontRenderer.DisplayFonts(FontLoaders.C16, "Import " + Subscriptions.subscribes.size() + " subscribe URLS", x + 145, y + 95, new Color(217, 217, 217).getRGB());
             AtomicInteger is = new AtomicInteger();
-            LiquidBounce.scriptManager.getScripts().forEach(script -> is.addAndGet(script.getRegisteredModules().size()));
-            CFontRenderer.DisplayFonts(FontLoaders.C16, "Loaded " + is + " module from " + LiquidBounce.scriptManager.getScripts().size() + " scripts", x + 145, y + 105, new Color(217, 217, 217).getRGB());
+            FDPClientChina.scriptManager.getScripts().forEach(script -> is.addAndGet(script.getRegisteredModules().size()));
+            CFontRenderer.DisplayFonts(FontLoaders.C16, "Loaded " + is + " module from " + FDPClientChina.scriptManager.getScripts().size() + " scripts", x + 145, y + 105, new Color(217, 217, 217).getRGB());
             AtomicInteger i1 = new AtomicInteger();
-            LiquidBounce.scriptManager.getScripts().forEach(script -> i1.addAndGet((int) script.getRegisteredModules().stream().filter(Module::getState).count()));
-            CFontRenderer.DisplayFonts(FontLoaders.C16, "Enable " + i1 + " module from " + LiquidBounce.scriptManager.getScripts().size() + " scripts", x + 145, y + 115, new Color(217, 217, 217).getRGB());
+            FDPClientChina.scriptManager.getScripts().forEach(script -> i1.addAndGet((int) script.getRegisteredModules().stream().filter(Module::getState).count()));
+            CFontRenderer.DisplayFonts(FontLoaders.C16, "Enable " + i1 + " module from " + FDPClientChina.scriptManager.getScripts().size() + " scripts", x + 145, y + 115, new Color(217, 217, 217).getRGB());
             CFontRenderer.DisplayFonts(FontLoaders.C14, "Tips: FDPClient is not responsible for script security, if you have any doubts, please consult the developer", x + 130, y + 140, new Color(161, 161, 161).getRGB());
 
         } else if (menuType == ScriptMenuType.Online) {
@@ -403,7 +403,7 @@ public class GuiScriptLoadMenu extends GuiScreen {
             GL11.glEnable(3089);
             RenderUtils.makeScissorBox(x + 120, y + 20, x + 500, y + 275);
             List<Script> scriptList = new ArrayList<>();
-            LiquidBounce.scriptManager.getScripts().stream().filter(Script::isOnline).forEach(scriptList::add);
+            FDPClientChina.scriptManager.getScripts().stream().filter(Script::isOnline).forEach(scriptList::add);
             for (Script script : scriptList) {
                 CFontRenderer.DisplayFonts(FontLoaders.C18, script.scriptName, x + 134, y - scroll + 40 + (i * 30), script.getState() ? new Color(255, 255, 255).getRGB() : new Color(180, 180, 180).getRGB());
                 StringBuilder authors = new StringBuilder();

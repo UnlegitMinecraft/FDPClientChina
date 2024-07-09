@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -37,7 +37,7 @@ class BestAntiVoid : Module() {
     }
     @EventTarget
     fun onPacket(e: PacketEvent) {
-        if (!LiquidBounce.moduleManager.get(Fly::class.java)!!.state && !LiquidBounce.moduleManager.get(Scaffold::class.java)!!.state) {
+        if (!FDPClientChina.moduleManager.get(Fly::class.java)!!.state && !FDPClientChina.moduleManager.get(Scaffold::class.java)!!.state) {
             if (!packets.isEmpty() && mc.thePlayer.ticksExisted < 100) packets.clear()
             if (e.packet is C03PacketPlayer) {
                 if (isInVoid()) {

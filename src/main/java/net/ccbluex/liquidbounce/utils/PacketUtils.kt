@@ -16,6 +16,7 @@ object PacketUtils : MinecraftInstance() {
         return false
     }
 
+    @JvmStatic
     fun sendPacketNoEvent(packet: Packet<INetHandlerPlayServer>) {
         packets.add(packet)
         mc.netHandler.addToSendQueue(packet)

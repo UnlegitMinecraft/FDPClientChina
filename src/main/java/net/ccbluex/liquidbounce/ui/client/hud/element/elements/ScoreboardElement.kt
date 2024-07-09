@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -136,8 +136,8 @@ class ScoreboardElement(
                 for (domain in allowedDomains) {
                     if (name.contains(domain, true)) {
                         name = when (serverValue.get().lowercase()) {
-                            "clientname" -> LiquidBounce.COLORED_NAME
-                            "website" -> LiquidBounce.CLIENT_WEBSITE
+                            "clientname" -> FDPClientChina.COLORED_NAME
+                            "website" -> FDPClientChina.CLIENT_WEBSITE
                             else -> "null"
                         }
                         listColor = ColorUtils.rainbow().rgb

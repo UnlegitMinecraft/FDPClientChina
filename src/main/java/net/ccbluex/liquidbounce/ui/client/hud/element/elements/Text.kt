@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -95,15 +95,15 @@ class Text(
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return "${mc.thePlayer.ping}"
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
-                "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
+                "attackDist" -> return if (FDPClientChina.combatManager.target != null) mc.thePlayer.getDistanceToEntity(FDPClientChina.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
 
         return when (str) {
             "username" -> mc.getSession().username
-            "clientName" -> LiquidBounce.CLIENT_NAME
-            "clientVersion" -> LiquidBounce.CLIENT_VERSION
-            "clientCreator" -> LiquidBounce.CLIENT_CREATOR
+            "clientName" -> FDPClientChina.CLIENT_NAME
+            "clientVersion" -> FDPClientChina.CLIENT_VERSION
+            "clientCreator" -> FDPClientChina.CLIENT_CREATOR
             "fps" -> Minecraft.getDebugFPS().toString()
             "date" -> DATE_FORMAT.format(System.currentTimeMillis())
             "time" -> HOUR_FORMAT.format(System.currentTimeMillis())
@@ -203,10 +203,10 @@ class Text(
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,220).rgb)
             FontLoaders.C14.drawString(
-                LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5.0f, 27.0f,Color(255,255,255,220).rgb
+                FDPClientChina.CLIENT_VERSION + " | "+FDPClientChina.VERSIONTYPE, 5.0f, 27.0f,Color(255,255,255,220).rgb
             )
             FontLoaders.C14.drawString(
-                "CN 2023Q4 | Reborn!", 5.0f, 37.0f,Color(255,255,255,220).rgb
+                "CN 2024Q3 | Bypass Updates", 5.0f, 37.0f,Color(255,255,255,220).rgb
             )
         }
 

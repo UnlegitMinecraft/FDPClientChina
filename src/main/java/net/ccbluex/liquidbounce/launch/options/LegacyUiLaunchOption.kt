@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.launch.options
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
@@ -20,15 +20,15 @@ object LegacyUiLaunchOption : LaunchOption() {
     lateinit var clickGuiConfig: ClickGuiConfig
 
     override fun start() {
-        LiquidBounce.mainMenu = GuiSelectPerformance()
-        LiquidBounce.moduleManager.registerModule(ClickGUIModule())
+        FDPClientChina.mainMenu = GuiSelectPerformance()
+        FDPClientChina.moduleManager.registerModule(ClickGUIModule())
 
         clickGui = ClickGui()
-        clickGuiConfig = ClickGuiConfig(File(LiquidBounce.fileManager.dir, "clickgui.json"))
-        LiquidBounce.fileManager.loadConfig(clickGuiConfig)
+        clickGuiConfig = ClickGuiConfig(File(FDPClientChina.fileManager.dir, "clickgui.json"))
+        FDPClientChina.fileManager.loadConfig(clickGuiConfig)
     }
 
     override fun stop() {
-        LiquidBounce.fileManager.saveConfig(clickGuiConfig)
+        FDPClientChina.fileManager.saveConfig(clickGuiConfig)
     }
 }

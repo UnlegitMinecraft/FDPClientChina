@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.Element;
@@ -61,7 +61,7 @@ public abstract class Panel extends MinecraftInstance {
         if(!visible)
             return;
 
-        final int maxElements = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get();
+        final int maxElements = FDPClientChina.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get();
 
         // Drag
         if(drag) {
@@ -126,7 +126,7 @@ public abstract class Panel extends MinecraftInstance {
     }
 
     public boolean handleScroll(int mouseX, int mouseY, int wheel) {
-        final int maxElements = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get();
+        final int maxElements = FDPClientChina.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get();
 
         if(mouseX >= getX() && mouseX <= getX() + 100 && mouseY >= getY() && mouseY <= getY() + 19 + elementsHeight) {
             if(wheel < 0 && scroll < elements.size() - maxElements) {
@@ -229,7 +229,7 @@ public abstract class Panel extends MinecraftInstance {
         int height = 0;
         int count = 0;
         for(final Element element : elements) {
-            if (count >= LiquidBounce.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get())
+            if (count >= FDPClientChina.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get())
                 continue;
             height += element.getHeight() + 1;
             ++count;

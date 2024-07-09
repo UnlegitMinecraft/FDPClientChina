@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
@@ -48,7 +48,7 @@ class Glide : Module() {
     override fun onEnable() {
         if (mc.thePlayer.onGround && fakeDamageValue.get()) {
             val event = PacketEvent(S19PacketEntityStatus(mc.thePlayer, 2.toByte()), PacketEvent.Type.RECEIVE)
-            LiquidBounce.eventManager.callEvent(event)
+            FDPClientChina.eventManager.callEvent(event)
             if (!event.isCancelled) {
                 mc.thePlayer.handleStatusUpdate(2.toByte())
             }

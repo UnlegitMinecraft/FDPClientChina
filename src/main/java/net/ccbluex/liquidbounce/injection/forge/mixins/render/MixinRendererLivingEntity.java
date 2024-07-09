@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.features.module.modules.render.Chams;
 import net.ccbluex.liquidbounce.features.module.modules.render.ESP;
 import net.ccbluex.liquidbounce.features.module.modules.render.NameTags;
@@ -36,7 +36,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Inject(method = "doRender", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+        final Chams chams = FDPClientChina.moduleManager.getModule(Chams.class);
 
         if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.INSTANCE.isSelected(entity, false)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
@@ -46,7 +46,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Inject(method = "doRender", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+        final Chams chams = FDPClientChina.moduleManager.getModule(Chams.class);
 
         if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.INSTANCE.isSelected(entity, false)) {
             GL11.glPolygonOffset(1.0F, 1000000F);
@@ -56,7 +56,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Inject(method = "canRenderName", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void canRenderName(T entity, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        if ((LiquidBounce.moduleManager.getModule(NameTags.class).getState() && EntityUtils.INSTANCE.isSelected(entity, false)))
+        if ((FDPClientChina.moduleManager.getModule(NameTags.class).getState() && EntityUtils.INSTANCE.isSelected(entity, false)))
             callbackInfoReturnable.setReturnValue(false);
     }
 
@@ -66,7 +66,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Overwrite
     protected <T extends EntityLivingBase> void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor) {
         boolean visible = !entitylivingbaseIn.isInvisible();
-        final TrueSight trueSight = LiquidBounce.moduleManager.getModule(TrueSight.class);
+        final TrueSight trueSight = FDPClientChina.moduleManager.getModule(TrueSight.class);
         boolean semiVisible = !visible && (!entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) || (trueSight.getState() && trueSight.getEntitiesValue().get()));
 
         if(visible || semiVisible) {
@@ -82,7 +82,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 GlStateManager.alphaFunc(516, 0.003921569F);
             }
 
-            final ESP esp = LiquidBounce.moduleManager.getModule(ESP.class);
+            final ESP esp = FDPClientChina.moduleManager.getModule(ESP.class);
             if(esp.getState() && EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)) {
                 Minecraft mc = Minecraft.getMinecraft();
                 boolean fancyGraphics = mc.gameSettings.fancyGraphics;
@@ -114,7 +114,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
             this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
 
-            final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+            final Chams chams = FDPClientChina.moduleManager.getModule(Chams.class);
             if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)) {
                 GL11.glPushMatrix();
                 GL11.glPushAttrib(1048575);

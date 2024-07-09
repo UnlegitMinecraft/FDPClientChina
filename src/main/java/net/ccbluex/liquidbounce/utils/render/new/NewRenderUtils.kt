@@ -1,6 +1,6 @@
 package skidunion.destiny.utils.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.RenderLeave
 import net.ccbluex.liquidbounce.utils.render.GLUtils
@@ -23,7 +23,7 @@ object NewRenderUtils {
     private val DISPLAY_LISTS_2D = IntArray(4)
     @JvmStatic
     fun drawShadowWithCustomAlpha(x: Float, y: Float, width: Float, height: Float, alpha: Float) {
-        if(LiquidBounce.RENDERLEAVE== RenderLeave.LOW) return
+        if(FDPClientChina.RENDERLEAVE== RenderLeave.LOW) return
         if(!HUD.shadowValue.get()) return
         drawTexturedRectWithCustomAlpha(x - 9, y - 9, 9f, 9f, "paneltopleft", alpha)
         drawTexturedRectWithCustomAlpha(x - 9, y + height, 9f, 9f, "panelbottomleft", alpha)

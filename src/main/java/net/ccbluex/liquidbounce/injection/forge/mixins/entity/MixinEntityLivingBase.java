@@ -1,20 +1,11 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMinecraft/FDPClientChina/
- */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
-import net.ccbluex.liquidbounce.utils.MovementUtils;
-import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -29,9 +20,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Objects;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
@@ -71,36 +66,21 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Overwrite
     protected void jump() {
-        if(!this.equals(Minecraft.getMinecraft().thePlayer)) {
-            return;
-        }
-
-        /**
-         * Jump Process Fix
-         * use updateFixState to reset Jump Fix state
-         * @param fixedYaw  The yaw player should have (NOT RotationYaw)
-         * @param strafeFix StrafeFix Module
-         */
-
-        final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
-        LiquidBounce.eventManager.callEvent(jumpEvent);
+        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion(), this.rotationYaw);
+        FDPClientChina.eventManager.callEvent(jumpEvent);
         if (jumpEvent.isCancelled())
             return;
 
         this.motionY = jumpEvent.getMotion();
-        final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
-        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+
+        if (this.isPotionActive(Potion.jump))
+            this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 
         if (this.isSprinting()) {
-            float fixedYaw = this.rotationYaw;
-            if(RotationUtils.targetRotation != null && strafeFix.getDoFix()) {
-                fixedYaw = RotationUtils.targetRotation.getYaw();
-            }
-            if(sprint.getState() && sprint.getJumpDirectionsValue().get()) {
-                fixedYaw += MovementUtils.INSTANCE.getMovingYaw() - this.rotationYaw;
-            }
-            this.motionX -= MathHelper.sin(fixedYaw / 180F * 3.1415927F) * 0.2F;
-            this.motionZ += MathHelper.cos(fixedYaw / 180F * 3.1415927F) * 0.2F;
+            float f = jumpEvent.getYaw() * 0.017453292F;
+
+            this.motionX -= (MathHelper.sin(f) * 0.2F);
+            this.motionZ += (MathHelper.cos(f) * 0.2F);
         }
 
         this.isAirBorne = true;
@@ -108,13 +88,12 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (LiquidBounce.moduleManager.getModule(NoJumpDelay.class).getState())
+        if (FDPClientChina.moduleManager.getModule(NoJumpDelay.class).getState())
             jumpTicks = 0;
     }
-
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
-        final Jesus jesus = LiquidBounce.moduleManager.getModule(Jesus.class);
+        final Jesus jesus = FDPClientChina.moduleManager.getModule(Jesus.class);
 
         if(jesus.getState() && !isJumping && !isSneaking() && isInWater() &&
                 jesus.getModeValue().equals("Legit")) {
@@ -130,7 +109,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At("HEAD"), cancellable = true)
     private void isPotionActive(Potion p_isPotionActive_1_, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = FDPClientChina.moduleManager.getModule(AntiBlind.class);
 
         if((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && antiBlind.getState() && antiBlind.getConfusionEffectValue().get())
             callbackInfoReturnable.setReturnValue(false);

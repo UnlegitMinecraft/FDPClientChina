@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MovementEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -36,11 +36,11 @@ class TargetStrafe : Module() {
      */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val target = LiquidBounce.combatManager.target
+        val target = FDPClientChina.combatManager.target
         if (renderModeValue.get() != "None" && canStrafe(target)) {
-            if (LiquidBounce.combatManager.target == null) return
+            if (FDPClientChina.combatManager.target == null) return
             val counter = intArrayOf(0)
-            val target = LiquidBounce.combatManager.target
+            val target = FDPClientChina.combatManager.target
             if (renderModeValue.get().equals("Circle", ignoreCase = true)) {
                 GL11.glPushMatrix()
                 GL11.glDisable(3553)
@@ -57,11 +57,11 @@ class TargetStrafe : Module() {
                 GL11.glLineWidth(1.0f)
                 GL11.glBegin(3)
                 val x =
-                        target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX -LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                        target!!.lastTickPosX + (FDPClientChina.combatManager.target!!.posX -FDPClientChina.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                 val y =
-                        LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY -LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                        FDPClientChina.combatManager.target!!.lastTickPosY + (FDPClientChina.combatManager.target!!.posY -FDPClientChina.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
                 val z =
-                        LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ -LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                        FDPClientChina.combatManager.target!!.lastTickPosZ + (FDPClientChina.combatManager.target!!.posZ -FDPClientChina.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..359) {
                     val rainbow = Color(
                             Color.HSBtoRGB(
@@ -98,11 +98,11 @@ class TargetStrafe : Module() {
                 GL11.glLineWidth(1.0f)
                 GL11.glBegin(3)
                 val x =
-                        LiquidBounce.combatManager.target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX -LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                        FDPClientChina.combatManager.target!!.lastTickPosX + (FDPClientChina.combatManager.target!!.posX -FDPClientChina.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                 val y =
-                        LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY -LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                        FDPClientChina.combatManager.target!!.lastTickPosY + (FDPClientChina.combatManager.target!!.posY -FDPClientChina.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
                 val z =
-                        LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ -LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                        FDPClientChina.combatManager.target!!.lastTickPosZ + (FDPClientChina.combatManager.target!!.posZ -FDPClientChina.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..10) {
                     counter[0] = counter[0] + 1
                     val rainbow = Color(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
@@ -188,7 +188,7 @@ class TargetStrafe : Module() {
     }
 
     fun toggleStrafe(): Boolean {
-        return targetEntity != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
+        return targetEntity != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || FDPClientChina.moduleManager[Speed::class.java]!!.state)
     }
 
     /**
@@ -197,32 +197,32 @@ class TargetStrafe : Module() {
      */
     @EventTarget
     fun onMove(event: MovementEvent) {
-        val target = LiquidBounce.combatManager.target
+        val target = FDPClientChina.combatManager.target
         if(!canStrafe(target)) return
         var aroundVoid = false
         for (x in -1..0) for (z in -1..0) if (isVoid(x, z)) aroundVoid = true
 
-        var yaw = RotationUtils.getRotationFromEyeHasPrev(LiquidBounce.combatManager.target).yaw
+        var yaw = RotationUtils.getRotationFromEyeHasPrev(FDPClientChina.combatManager.target).yaw
 
         if (mc.thePlayer.isCollidedHorizontally || aroundVoid) direction *= -1
 
         var targetStrafe = (if (mc.thePlayer.moveStrafing != 0F) mc.thePlayer.moveStrafing * direction else direction.toFloat())
         if (!PlayerUtil.isBlockUnder()) targetStrafe = 0f
 
-        val rotAssist = 45 / mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target)
-        val moveAssist = (45f / getStrafeDistance(LiquidBounce.combatManager.target!!)).toDouble()
+        val rotAssist = 45 / mc.thePlayer.getDistanceToEntity(FDPClientChina.combatManager.target)
+        val moveAssist = (45f / getStrafeDistance(FDPClientChina.combatManager.target!!)).toDouble()
 
         var mathStrafe = 0f
 
         if (targetStrafe > 0) {
-            if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
-                            LiquidBounce.combatManager.target!!
+            if ((FDPClientChina.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||FDPClientChina.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
+                            FDPClientChina.combatManager.target!!
                     ) < radiusValue.get()
             ) yaw += -rotAssist
             mathStrafe += -moveAssist.toFloat()
         } else if (targetStrafe < 0) {
-            if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
-                            LiquidBounce.combatManager.target!!
+            if ((FDPClientChina.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||FDPClientChina.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
+                            FDPClientChina.combatManager.target!!
                     ) < radiusValue.get()
             ) yaw += rotAssist
             mathStrafe += moveAssist.toFloat()
@@ -265,7 +265,7 @@ class TargetStrafe : Module() {
     }
 
     fun canStrafe(target: EntityLivingBase?): Boolean {
-        return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && ((!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state) || (onlyflyValue.get() && LiquidBounce.moduleManager[Fly::class.java]!!.state))
+        return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && ((!onlySpeedValue.get() || FDPClientChina.moduleManager[Speed::class.java]!!.state) || (onlyflyValue.get() && FDPClientChina.moduleManager[Fly::class.java]!!.state))
     }
 
     private fun checkVoid(): Boolean {

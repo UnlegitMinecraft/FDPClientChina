@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,13 +19,13 @@ public class NotifyUtil {
                     e.printStackTrace();
                 }
                 trayIcon.setImageAutoSize(true);
-                trayIcon.setToolTip(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION);
+                trayIcon.setToolTip(FDPClientChina.CLIENT_NAME + " " + FDPClientChina.CLIENT_VERSION);
                 try {
                     SystemTray.getSystemTray().add(trayIcon);
                 } catch (AWTException var7) {
                     ClientUtils.INSTANCE.logError("Unable to add tray icon.");
                 }
-                trayIcon.displayMessage(LiquidBounce.CLIENT_NAME, "Thank you for using " + LiquidBounce.CLIENT_NAME, TrayIcon.MessageType.NONE);
+                trayIcon.displayMessage(FDPClientChina.CLIENT_NAME, "Thank you for using " + FDPClientChina.CLIENT_NAME, TrayIcon.MessageType.NONE);
             }
         }
     }

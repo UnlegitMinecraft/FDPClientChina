@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -73,7 +73,7 @@ class AuthBypass : Module() {
                 mc.netHandler.addToSendQueue(packet)
             }
             packets.clear()
-            LiquidBounce.hud.addNotification(Notification(name, "Authenticate bypassed.", NotifyType.INFO))
+            FDPClientChina.hud.addNotification(Notification(name, "Authenticate bypassed.", NotifyType.INFO))
         }
     }
 

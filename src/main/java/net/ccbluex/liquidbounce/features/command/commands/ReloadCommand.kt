@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.modules.misc.KillInsults
@@ -19,34 +19,34 @@ class ReloadCommand : Command("reload", emptyArray()) {
     override fun execute(args: Array<String>) {
         alert("Reloading...")
         alert("§c§lReloading commands...")
-        LiquidBounce.commandManager = CommandManager()
-        LiquidBounce.commandManager.registerCommands()
-        LiquidBounce.isStarting = true
-        LiquidBounce.isLoadingConfig = true
-        LiquidBounce.scriptManager.disableScripts()
-        LiquidBounce.scriptManager.unloadScripts()
-        for (module in LiquidBounce.moduleManager.modules)
-            LiquidBounce.moduleManager.generateCommand(module)
+        FDPClientChina.commandManager = CommandManager()
+        FDPClientChina.commandManager.registerCommands()
+        FDPClientChina.isStarting = true
+        FDPClientChina.isLoadingConfig = true
+        FDPClientChina.scriptManager.disableScripts()
+        FDPClientChina.scriptManager.unloadScripts()
+        for (module in FDPClientChina.moduleManager.modules)
+            FDPClientChina.moduleManager.generateCommand(module)
         alert("§c§lReloading scripts...")
-        LiquidBounce.scriptManager.loadScripts()
-        LiquidBounce.scriptManager.enableScripts()
+        FDPClientChina.scriptManager.loadScripts()
+        FDPClientChina.scriptManager.enableScripts()
         alert("§c§lReloading fonts...")
         Fonts.loadFonts()
         alert("§c§lReloading modules...")
-        LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig, false)
+        FDPClientChina.configManager.load(FDPClientChina.configManager.nowConfig, false)
         KillInsults.loadFile()
         GuiCapeManager.load()
         alert("§c§lReloading accounts...")
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
+        FDPClientChina.fileManager.loadConfig(FDPClientChina.fileManager.accountsConfig)
         alert("§c§lReloading friends...")
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.friendsConfig)
+        FDPClientChina.fileManager.loadConfig(FDPClientChina.fileManager.friendsConfig)
         alert("§c§lReloading xray...")
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.xrayConfig)
+        FDPClientChina.fileManager.loadConfig(FDPClientChina.fileManager.xrayConfig)
         alert("§c§lReloading HUD...")
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.hudConfig)
+        FDPClientChina.fileManager.loadConfig(FDPClientChina.fileManager.hudConfig)
         alert("Reloaded.")
-        LiquidBounce.isStarting = false
-        LiquidBounce.isLoadingConfig = false
+        FDPClientChina.isStarting = false
+        FDPClientChina.isLoadingConfig = false
         System.gc()
     }
 }

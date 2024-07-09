@@ -38,13 +38,10 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
-import java.awt.SystemTray
-import java.awt.TrayIcon
 import java.util.*
-import javax.imageio.ImageIO
 import kotlin.concurrent.thread
 
-object LiquidBounce {
+object FDPClientChina {
 
 
     // Client information
@@ -65,7 +62,7 @@ object LiquidBounce {
 
     @JvmField
     val gitInfo = Properties().also {
-        val inputStream = LiquidBounce::class.java.classLoader.getResourceAsStream("git.properties")
+        val inputStream = FDPClientChina::class.java.classLoader.getResourceAsStream("git.properties")
         if (inputStream != null) {
             it.load(inputStream)
         } else {

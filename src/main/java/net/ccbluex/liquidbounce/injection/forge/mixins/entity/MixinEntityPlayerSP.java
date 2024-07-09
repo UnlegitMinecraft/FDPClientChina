@@ -1,21 +1,13 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMinecraft/FDPClientChina/
- */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiDesync;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
-import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
-import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
+import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
-import net.ccbluex.liquidbounce.utils.Rotation;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
@@ -31,16 +23,15 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -49,6 +40,8 @@ import java.util.List;
 @Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
+    @Unique
+    private boolean viaForge$prevOnGround;
     @Shadow
     private boolean serverSneakState;
 
@@ -133,9 +126,13 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     public void onUpdateWalkingPlayer(CallbackInfo ci) {
         try {
-            LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE));
+            final StrafeFix strafeFix = FDPClientChina.moduleManager.getModule(StrafeFix.class);
+            strafeFix.updateOverwrite();
+
+            FDPClientChina.eventManager.callEvent(new MotionEvent(EventState.PRE));
 
             boolean flag = this.isSprinting();
+            //alert("Attempt: " + debug_AttemptSprint + " Actual: " + this.isSprinting() + " Server: " + this.serverSprintState);
             if (flag != this.serverSprintState) {
                 if (flag) {
                     this.sendQueue.addToSendQueue(new C0BPacketEntityAction((EntityPlayerSP) (Object) this, C0BPacketEntityAction.Action.START_SPRINTING));
@@ -173,10 +170,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 double zDiff = this.posZ - this.lastReportedPosZ;
                 double yawDiff = yaw - lastReportedYaw;
                 double pitchDiff = pitch - lastReportedPitch;
-                
-                final Fly fly = LiquidBounce.moduleManager.getModule(Fly.class);
-                final Criticals criticals = LiquidBounce.moduleManager.getModule(Criticals.class);
-                final AntiDesync antiDesync = LiquidBounce.moduleManager.getModule(AntiDesync.class);
+
+                final Fly fly = FDPClientChina.moduleManager.getModule(Fly.class);
+                final Criticals criticals = FDPClientChina.moduleManager.getModule(Criticals.class);
+                final AntiDesync antiDesync = FDPClientChina.moduleManager.getModule(AntiDesync.class);
                 boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4D || this.positionUpdateTicks >= 20 || (fly.getState() && fly.getAntiDesync()) || (criticals.getState() && criticals.getAntiDesync()) || (antiDesync.getState() && xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 0.0D);
                 boolean rotated = yawDiff != 0.0D || pitchDiff != 0.0D;
 
@@ -210,7 +207,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 }
             }
 
-            LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.POST));
+            FDPClientChina.eventManager.callEvent(new MotionEvent(EventState.POST));
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -222,7 +219,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     private void onPushOutOfBlocks(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         PushOutEvent event = new PushOutEvent();
         if (this.noClip) event.cancelEvent();
-        LiquidBounce.eventManager.callEvent(event);
+        FDPClientChina.eventManager.callEvent(event);
 
         if (event.isCancelled())
             callbackInfoReturnable.setReturnValue(false);
@@ -233,7 +230,16 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      */
     @Overwrite
     public void onLivingUpdate() {
-        LiquidBounce.eventManager.callEvent(new UpdateEvent());
+        boolean lastForwardToggleState = this.movementInput.moveForward > 0.05f;
+        boolean lastJumpToggleState = this.movementInput.jump;
+
+        this.movementInput.updatePlayerMoveState();
+
+        final Sprint sprint = FDPClientChina.moduleManager.getModule(Sprint.class);
+        final KillAura killAura = FDPClientChina.moduleManager.getModule(KillAura.class);
+        final InventoryMove inventoryMove = FDPClientChina.moduleManager.getModule(InventoryMove.class);
+        final Scaffold scaffold = FDPClientChina.moduleManager.getModule(Scaffold.class);
+        final StrafeFix strafeFix = FDPClientChina.moduleManager.getModule(StrafeFix.class);
 
         if (this.sprintingTicksLeft > 0) {
             --this.sprintingTicksLeft;
@@ -246,6 +252,51 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         if (this.sprintToggleTimer > 0) {
             --this.sprintToggleTimer;
         }
+
+        boolean isSprintDirection = false;
+        boolean movingStat = Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f;
+
+        boolean runStrictStrafe = strafeFix.getDoFix() && !strafeFix.getSilentFix();
+        boolean noStrafe = RotationUtils.targetRotation == null || !strafeFix.getDoFix();
+
+        if (!movingStat || runStrictStrafe || noStrafe) {
+            isSprintDirection = this.movementInput.moveForward > 0.05f;
+        }else {
+            isSprintDirection = Math.abs(RotationUtils.getAngleDifference(MovementUtils.INSTANCE.getMovingYaw(), RotationUtils.targetRotation.getYaw())) < 67.0f;
+        }
+
+        if (!movingStat) {
+            isSprintDirection = false;
+        }
+
+        boolean attemptToggle = sprint.getState() || this.isSprinting() || this.mc.gameSettings.keyBindSprint.isKeyDown();
+        boolean baseIsMoving = (sprint.getState() && sprint.getAllDirectionsValue().get() && (Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f)) || isSprintDirection;
+        boolean baseSprintState = ((!sprint.getHungryValue().get() && sprint.getState()) || (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying) && baseIsMoving && (!this.isCollidedHorizontally || sprint.getCollideValue().get()) && (!this.isSneaking() || sprint.getSneakValue().get()) && !this.isPotionActive(Potion.blindness);
+        boolean canToggleSprint = this.onGround && !this.movementInput.jump && !this.movementInput.sneak && !this.isPotionActive(Potion.blindness);
+        boolean isCurrentUsingItem = getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding();
+        boolean isCurrentUsingSword = getHeldItem() != null && getHeldItem().getItem() instanceof ItemSword && (killAura.getBlockingStatus() || this.isUsingItem());
+
+        baseSprintState = baseSprintState && !(inventoryMove.getNoSprintValue().equals("Real") && inventoryMove.getInvOpen());
+
+        if (!attemptToggle && !lastForwardToggleState && baseSprintState && !this.isSprinting() && canToggleSprint && !isCurrentUsingItem && !this.isPotionActive(Potion.blindness)) {
+            if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown()) {
+                this.sprintToggleTimer = 7;
+            } else {
+                attemptToggle = true;
+            }
+        }
+
+        if (sprint.getForceSprint() || baseSprintState && (!isCurrentUsingItem || (sprint.getUseItemValue().get() && (!sprint.getUseItemSwordValue().get() || isCurrentUsingSword))) && attemptToggle) {
+            this.setSprinting(true);
+        } else {
+            this.setSprinting(false);
+        }
+
+        //Run Sprint update before UpdateEvent
+
+        FDPClientChina.eventManager.callEvent(new UpdateEvent());
+
+        //Update Portal Effects state (Vanilla)
 
         this.prevTimeInPortal = this.timeInPortal;
 
@@ -282,63 +333,66 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             --this.timeUntilPortal;
         }
 
-        boolean flag = this.movementInput.jump;
-        boolean flag1 = this.movementInput.sneak;
-        float f = 0.8F;
-        boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
-        final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
+        /**
+         * Update Sprint State - Post
+         * Apply Item Slowdown
+         * Update sprint state for modules
+         * TODO: This part can be skipped if there's no rotation change
+         */
 
-        if (getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding()) {
+        movingStat = Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f;
+        runStrictStrafe = strafeFix.getDoFix() && !strafeFix.getSilentFix();
+        noStrafe = RotationUtils.targetRotation == null || !strafeFix.getDoFix();
+
+        isCurrentUsingItem = getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding();
+        isCurrentUsingSword = getHeldItem() != null && getHeldItem().getItem() instanceof ItemSword && (killAura.getBlockingStatus() || this.isUsingItem());
+
+        if (isCurrentUsingItem) {
             final SlowDownEvent slowDownEvent = new SlowDownEvent(0.2F, 0.2F);
-            LiquidBounce.eventManager.callEvent(slowDownEvent);
+            FDPClientChina.eventManager.callEvent(slowDownEvent);
             this.movementInput.moveStrafe *= slowDownEvent.getStrafe();
             this.movementInput.moveForward *= slowDownEvent.getForward();
-            this.sprintToggleTimer = 0;
         }
 
-        this.pushOutOfBlocks(this.posX - (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double) this.width * 0.35D);
-        this.pushOutOfBlocks(this.posX - (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double) this.width * 0.35D);
-        this.pushOutOfBlocks(this.posX + (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double) this.width * 0.35D);
-        this.pushOutOfBlocks(this.posX + (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double) this.width * 0.35D);
+        pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ + width * 0.35);
+        pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ - width * 0.35);
+        pushOutOfBlocks(posX + width * 0.35, getEntityBoundingBox().minY + 0.5, posZ - width * 0.35);
+        pushOutOfBlocks(posX + width * 0.35, getEntityBoundingBox().minY + 0.5, posZ + width * 0.35);
 
-        final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
-
-        boolean flag3 = !sprint.getFoodValue().get() || (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
-
-        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness)) {
-            if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown()) {
-                this.sprintToggleTimer = 7;
-            } else {
-                this.setSprinting(true);
-            }
+        if (!movingStat || runStrictStrafe || noStrafe) {
+            isSprintDirection = this.movementInput.moveForward > 0.05f;
+        }else {
+            isSprintDirection = Math.abs(RotationUtils.getAngleDifference(MovementUtils.INSTANCE.getMovingYaw(), RotationUtils.targetRotation.getYaw())) < 67.0f;
         }
 
-        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && ((noSlow.getState() && sprint.getUseItemValue().get()) || !this.isUsingItem()) && !this.isPotionActive(Potion.blindness) && this.mc.gameSettings.keyBindSprint.isKeyDown()) {
+        baseIsMoving = (sprint.getState() && sprint.getAllDirectionsValue().get() && (Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f)) || isSprintDirection;
+        baseSprintState = ((!sprint.getHungryValue().get() && sprint.getState()) || (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying) && baseIsMoving && (!this.isCollidedHorizontally || sprint.getCollideValue().get()) && (!this.isSneaking() || sprint.getSneakValue().get()) && !this.isPotionActive(Potion.blindness);
+
+        //Don't check current Sprint state cuz it's not updated in real time :bruh:
+
+        if (sprint.getForceSprint() || baseSprintState && (!isCurrentUsingItem || (sprint.getUseItemValue().get() && (!sprint.getUseItemSwordValue().get() || isCurrentUsingSword))) && attemptToggle) {
             this.setSprinting(true);
+        } else {
+            this.setSprinting(false);
         }
 
-        final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
-        if ((scaffold.getState() && !scaffold.getCanSprint()) || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
-            this.setSprinting(false);
+        if (scaffold.getState()) {
+            this.setSprinting(scaffold.getCanSprint());
+        }
 
-        if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3))
-            this.setSprinting(false);
-        
-        final InventoryMove inventoryMove = LiquidBounce.moduleManager.getModule(InventoryMove.class);
-        if(inventoryMove.getNoSprintValue().equals("Real") && inventoryMove.getInvOpen())
-            this.setSprinting(false);
+        boolean debug_AttemptSprint = this.isSprinting();
 
-        //aac may check it :(
+        attemptToggle = false;
+
         if (this.capabilities.allowFlying) {
             if (this.mc.playerController.isSpectatorMode()) {
                 if (!this.capabilities.isFlying) {
                     this.capabilities.isFlying = true;
                     this.sendPlayerAbilities();
                 }
-            } else if (!flag && this.movementInput.jump) {
+            } else if (!lastJumpToggleState && this.movementInput.jump) {
                 if (this.flyToggleTimer == 0) {
                     this.flyToggleTimer = 7;
                 } else {
@@ -368,13 +422,13 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 }
             }
 
-            if (flag && !this.movementInput.jump) {
+            if (lastJumpToggleState && !this.movementInput.jump) {
                 this.horseJumpPowerCounter = -10;
                 this.sendHorseJump();
-            } else if (!flag && this.movementInput.jump) {
+            } else if (!lastJumpToggleState && this.movementInput.jump) {
                 this.horseJumpPowerCounter = 0;
                 this.horseJumpPower = 0.0F;
-            } else if (flag) {
+            } else if (lastJumpToggleState) {
                 ++this.horseJumpPowerCounter;
 
                 if (this.horseJumpPowerCounter < 10) {
@@ -398,7 +452,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Override
     public void moveEntity(double x, double y, double z) {
         MovementEvent movementEvent = new MovementEvent(x, y, z);
-        LiquidBounce.eventManager.callEvent(movementEvent);
+        FDPClientChina.eventManager.callEvent(movementEvent);
 
         if (movementEvent.isCancelled())
             return;
@@ -501,7 +555,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
             if (this.stepHeight > 0.0F && flag1 && (d3 != x || d5 != z)) {
                 StepEvent stepEvent = new StepEvent(this.stepHeight, EventState.PRE);
-                LiquidBounce.eventManager.callEvent(stepEvent);
+                FDPClientChina.eventManager.callEvent(stepEvent);
                 double d11 = x;
                 double d7 = y;
                 double d8 = z;
@@ -581,7 +635,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                     z = d8;
                     this.setEntityBoundingBox(axisalignedbb3);
                 } else {
-                    LiquidBounce.eventManager.callEvent(new StepEvent(-1f, EventState.POST));
+                    FDPClientChina.eventManager.callEvent(new StepEvent(-1f, EventState.POST));
                 }
             }
 

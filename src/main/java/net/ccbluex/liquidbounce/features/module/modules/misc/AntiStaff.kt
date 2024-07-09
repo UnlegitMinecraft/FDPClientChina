@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -89,7 +89,7 @@ class AntiStaff : Module() {
             val entity = mc.theWorld.getEntityByID(packet.entityId)
             if (entity != null && (staffs.contains(entity.name) || staffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification(name, "Detected staff members with invis. You should quit ASAP.", NotifyType.WARNING, 8000))
+                    FDPClientChina.hud.addNotification(Notification(name, "Detected staff members with invis. You should quit ASAP.", NotifyType.WARNING, 8000))
                     
                     if (chat.get()) {
                         ClientUtils.displayChatMessage((message.get()).replace("%staff%", entity.name))
@@ -107,7 +107,7 @@ class AntiStaff : Module() {
 
             if (entity != null && (staffs.contains(entity.name) || staffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification(name, "Detected staff members. You should quit ASAP.", NotifyType.WARNING,8000))
+                    FDPClientChina.hud.addNotification(Notification(name, "Detected staff members. You should quit ASAP.", NotifyType.WARNING,8000))
                     
                     if (chat.get()) {
                         ClientUtils.displayChatMessage((message.get()).replace("%staff%", entity.name))

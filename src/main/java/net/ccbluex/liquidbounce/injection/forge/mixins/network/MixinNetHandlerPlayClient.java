@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.buffer.Unpooled;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
@@ -82,7 +82,7 @@ public abstract class MixinNetHandlerPlayClient {
                 File file1 = new File(this.gameController.mcDataDir, "saves");
                 File file2 = new File(file1, s2);
                 if (file2.isFile()
-                        && !url.toLowerCase().contains(LiquidBounce.CLIENT_NAME.toLowerCase())
+                        && !url.toLowerCase().contains(FDPClientChina.CLIENT_NAME.toLowerCase())
                         /* lmao imagine check the client legal with this exploit, zqat.top */) {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.ACCEPTED));
                     // a legit client will send SUCCESSFULLY_LOADED back even [java.util.zip.ZipException] is thrown
@@ -142,7 +142,7 @@ public abstract class MixinNetHandlerPlayClient {
                 this.gameController.thePlayer.motionY + packetIn.func_149144_d(),
                 this.gameController.thePlayer.motionZ + packetIn.func_149147_e());
         PacketEvent packetEvent = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
-        LiquidBounce.eventManager.callEvent(packetEvent);
+        FDPClientChina.eventManager.callEvent(packetEvent);
         if (!packetEvent.isCancelled()) {
             handleEntityVelocity(packet);
         }
@@ -151,7 +151,7 @@ public abstract class MixinNetHandlerPlayClient {
     @Inject(method = "onDisconnect", at = @At("HEAD"), cancellable = true)
     private void onDisconnect(IChatComponent reason, CallbackInfo callbackInfo) {
         if(gameController.theWorld != null && gameController.thePlayer != null
-                && LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
+                && FDPClientChina.moduleManager.getModule(SilentDisconnect.class).getState()) {
             ClientUtils.INSTANCE.displayAlert(I18n.format("disconnect.lost") + ":");
             ClientUtils.INSTANCE.displayChatMessage(reason.getFormattedText());
             callbackInfo.cancel();

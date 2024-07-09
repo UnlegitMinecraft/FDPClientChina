@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
@@ -48,7 +48,7 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
-        if (LiquidBounce.moduleManager.getModule(HUD.class).getState())
+        if (FDPClientChina.moduleManager.getModule(HUD.class).getState())
             callbackInfo.cancel();
     }
 
@@ -57,7 +57,7 @@ public abstract class MixinGuiInGame extends MixinGui {
      */
     @Overwrite
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
-        final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        final HUD hud = FDPClientChina.moduleManager.getModule(HUD.class);
 
         float tabHope = this.mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
         final Animations animations = Animations.INSTANCE;
@@ -105,12 +105,12 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.disableBlend();
         }
 
-        LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks, StaticStorage.scaledResolution));
+        FDPClientChina.eventManager.callEvent(new Render2DEvent(partialTicks, StaticStorage.scaledResolution));
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
-        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = FDPClientChina.moduleManager.getModule(AntiBlind.class);
 
         if (antiBlind.getState() && antiBlind.getPumpkinEffectValue().get())
             callbackInfo.cancel();
@@ -118,7 +118,7 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
-        final Crosshair crossHair = LiquidBounce.moduleManager.getModule(Crosshair.class);
+        final Crosshair crossHair = FDPClientChina.moduleManager.getModule(Crosshair.class);
         if (crossHair.getState())
             cir.setReturnValue(false);
     }

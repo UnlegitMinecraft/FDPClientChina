@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -43,7 +43,7 @@ class AntiStuck : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (stuck) {
-            val freeze = LiquidBounce.moduleManager[Freeze::class.java]!!
+            val freeze = FDPClientChina.moduleManager[Freeze::class.java]!!
             freeze.state = true
 
             if (timer.hasTimePassed(1500)) {
@@ -59,7 +59,7 @@ class AntiStuck : Module() {
                 reduceTimer.reset()
                 flagsTime = 0
                 stuck = true
-                LiquidBounce.hud.addNotification(Notification(name, "Trying to unstuck you", NotifyType.INFO, 1500))
+                FDPClientChina.hud.addNotification(Notification(name, "Trying to unstuck you", NotifyType.INFO, 1500))
             }
             if (timer.hasTimePassed(1500) && reduceTimer.hasTimePassed(500) && flagsTime> 0) {
                 flagsTime -= 1

@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.launch.options
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
@@ -32,14 +32,14 @@ object FancyUiLaunchOption : LaunchOption() {
         val mc = Minecraft.getMinecraft()
         mc.displayGuiScreen(GuiPrepare(progressHandler) {
             // I think LiquidBounce.mainMenu must be initialized here
-            mc.displayGuiScreen(LiquidBounce.mainMenu)
+            mc.displayGuiScreen(FDPClientChina.mainMenu)
         })
 
         // todo: add new HTML UI and Java To JS Bridge
 
         LegacyUiLaunchOption.start()
 
-        LiquidBounce.commandManager.registerCommand(BrowseCommand())
+        FDPClientChina.commandManager.registerCommand(BrowseCommand())
     }
 
     override fun stop() {

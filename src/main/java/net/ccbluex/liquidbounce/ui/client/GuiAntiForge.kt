@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.minecraft.client.gui.GuiButton
@@ -46,7 +46,7 @@ class GuiAntiForge(private val prevGui: GuiScreen) : GuiScreen() {
         }
         updateButtonStat()
         if (button.id != 0) {
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
+            FDPClientChina.fileManager.saveConfig(FDPClientChina.fileManager.specialConfig)
         }
     }
 

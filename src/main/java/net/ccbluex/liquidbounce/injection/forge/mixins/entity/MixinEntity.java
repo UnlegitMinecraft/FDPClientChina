@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
@@ -184,9 +184,9 @@ public abstract class MixinEntity {
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
-        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+        final StrafeFix strafeFix = FDPClientChina.moduleManager.getModule(StrafeFix.class);
         //alert("Strafe: " + strafe + " Forward: " + forward + " Factor: " + friction + " DoFix: " + strafeFix.getDoFix());
-        LiquidBounce.eventManager.callEvent(strafeEvent);
+        FDPClientChina.eventManager.callEvent(strafeEvent);
         if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
             strafeFix.runStrafeFixLoop(strafeFix.getSilentFix(), strafeEvent);
         }
@@ -197,7 +197,7 @@ public abstract class MixinEntity {
 
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
     private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
-        final HitBox hitBox = LiquidBounce.moduleManager.getModule(HitBox.class);
+        final HitBox hitBox = FDPClientChina.moduleManager.getModule(HitBox.class);
 
         if (hitBox.getState() && EntityUtils.INSTANCE.isSelected(((Entity)((Object)this)),true))
             callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());

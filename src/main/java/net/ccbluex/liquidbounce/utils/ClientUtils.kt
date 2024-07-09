@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
 import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager
@@ -18,7 +18,11 @@ import java.util.*
 
 object
 ClientUtils : MinecraftInstance() {
-    private val logger = LogManager.getLogger("FDPClient")
+
+    @JvmStatic
+    val logger = LogManager.getLogger("FDPClientChina")
+
+    var runTimeTicks = 0
 
     /**
      * the hardware id used to identify in bstats
@@ -60,10 +64,10 @@ ClientUtils : MinecraftInstance() {
             bsUuidFile.delete()
 
         // build metrics
-        val metrics = Metrics(LiquidBounce.CLIENT_NAME, 16023, LiquidBounce.CLIENT_VERSION, hardwareUuid.toString(), true)
+        val metrics = Metrics(FDPClientChina.CLIENT_NAME, 16023, FDPClientChina.CLIENT_VERSION, hardwareUuid.toString(), true)
 
         metrics.addCustomChart(SimplePie("config_name") {
-            LiquidBounce.configManager.nowConfig
+            FDPClientChina.configManager.nowConfig
         })
         metrics.addCustomChart(SimplePie("server_address") {
             ServerUtils.getRemoteIp()
@@ -91,10 +95,10 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun setTitle() {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE}")
+        Display.setTitle("${FDPClientChina.CLIENT_NAME} ${FDPClientChina.CLIENT_VERSION} (${FDPClientChina.CLIENT_BRANCH}) | ${FDPClientChina.CLIENT_WEBSITE}")
     }
     fun setTitle(stats:String) {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE} - "+stats)
+        Display.setTitle("${FDPClientChina.CLIENT_NAME} ${FDPClientChina.CLIENT_VERSION} (${FDPClientChina.CLIENT_BRANCH}) | ${FDPClientChina.CLIENT_WEBSITE} - "+stats)
     }
 
     fun displayAlert(message: String) {

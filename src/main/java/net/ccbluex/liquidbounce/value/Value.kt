@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
-abstract class Value<T>(val name: String, protected var value: T) {
+abstract class Value<T>(val name: String, var value: T) {
     val default = value
 
     private var displayableFunc: () -> Boolean = { true }
@@ -31,7 +31,7 @@ abstract class Value<T>(val name: String, protected var value: T) {
             onChange(oldValue, newValue)
             changeValue(newValue)
             onChanged(oldValue, newValue)
-            LiquidBounce.configManager.smartSave()
+            FDPClientChina.configManager.smartSave()
         } catch (e: Exception) {
             ClientUtils.logError("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
         }

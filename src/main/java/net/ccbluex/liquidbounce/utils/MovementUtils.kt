@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.MovementEvent
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.potion.Potion
@@ -16,6 +17,12 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object MovementUtils : MinecraftInstance() {
+
+    fun resetMotion(y: Boolean) {
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionZ = 0.0
+        if(y) mc.thePlayer.motionY = 0.0
+    }
 
     fun getSpeed(): Float {
         return sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ).toFloat()
@@ -92,11 +99,11 @@ object MovementUtils : MinecraftInstance() {
             return Math.toRadians(rotationYaw.toDouble())
         }
 
-    val jumpMotion: Float
+    val jumpMotion: Double
         get() {
-            var mot = 0.42f
+            var mot = 0.41999998688698
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1).toFloat() * 0.1f
+                mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1) * 0.1
             }
             return mot
         }
@@ -282,4 +289,12 @@ object MovementUtils : MinecraftInstance() {
         return returnValue
     }
 
+    fun updateControls() {
+        mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+        mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
+        mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
+        mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
+    }
 }

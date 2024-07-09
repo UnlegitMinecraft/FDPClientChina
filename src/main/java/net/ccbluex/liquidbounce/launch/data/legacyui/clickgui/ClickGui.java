@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
@@ -48,7 +48,7 @@ public class ClickGui extends GuiScreen {
 
                 @Override
                 public void setupItems() {
-                    for (Module module : LiquidBounce.moduleManager.getModules())
+                    for (Module module : FDPClientChina.moduleManager.getModules())
                         if (module.getCategory() == category)
                             getElements().add(new ModuleElement(module));
                 }
@@ -64,7 +64,7 @@ public class ClickGui extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         if (anims == null)
             anims = new Animation(EaseUtils.EnumEasingType.BACK, EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END, 1.5, 2, 600L).start();
-        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        final double scale = FDPClientChina.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
 
         GlStateManager.ortho(0.0D, anims.getValue(), 0.0, anims.getValue(), -10, 10);
         GlStateManager.translate(0, scroll, 0);
@@ -128,7 +128,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        final double scale = FDPClientChina.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
         mouseY -= scroll;
         mouseX /= scale;
         mouseY /= scale;
@@ -156,7 +156,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        final double scale = FDPClientChina.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
         mouseY -= scroll;
         mouseX /= scale;
         mouseY /= scale;
@@ -201,7 +201,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        LiquidBounce.fileManager.saveConfig(LegacyUiLaunchOption.getClickGuiConfig());
+        FDPClientChina.fileManager.saveConfig(LegacyUiLaunchOption.getClickGuiConfig());
         anims = null;
     }
 

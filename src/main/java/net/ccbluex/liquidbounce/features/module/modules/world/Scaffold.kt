@@ -5,14 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
-import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
@@ -238,9 +237,6 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        // if(!mc.thePlayer.onGround) tolleyStayTick=0
-        //    else tolleyStayTick++
-        // if(tolleyStayTick>100) tolleyStayTick=100
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
@@ -258,7 +254,7 @@ class Scaffold : Module() {
                     }
                 }
                 "whenspeed" -> {
-                    canSameY = LiquidBounce.moduleManager[Speed::class.java]!!.state
+                    canSameY = FDPClientChina.moduleManager[Speed::class.java]!!.state
                 }
                 else -> {
                     canSameY = false

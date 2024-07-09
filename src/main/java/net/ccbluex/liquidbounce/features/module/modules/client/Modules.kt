@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -22,9 +22,9 @@ object Modules : Module() {
 
             "custom" -> {
                 if (enable) {
-                    LiquidBounce.tipSoundManager.enableSound.asyncPlay()
+                    FDPClientChina.tipSoundManager.enableSound.asyncPlay()
                 } else {
-                    LiquidBounce.tipSoundManager.disableSound.asyncPlay()
+                    FDPClientChina.tipSoundManager.disableSound.asyncPlay()
                 }
             }
         }

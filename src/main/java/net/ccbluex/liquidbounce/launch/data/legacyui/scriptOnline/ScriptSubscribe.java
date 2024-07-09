@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.scriptOnline;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.script.Script;
 
 import java.io.File;
@@ -22,7 +22,7 @@ public class ScriptSubscribe {
         for (String script : OnlineScriptLoader.getScriptsBySubscribe(url)) {
             Subscriptions.tempJs = script;
             Script script1 = new Script(new File("CloudLoad"));
-            LiquidBounce.scriptManager.getScripts().add(script1);
+            FDPClientChina.scriptManager.getScripts().add(script1);
         }
         Subscriptions.loadingCloud = false;
     }

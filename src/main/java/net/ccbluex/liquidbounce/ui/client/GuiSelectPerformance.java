@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.launch.data.legacyui.GuiMainMenu;
@@ -32,7 +32,7 @@ public class GuiSelectPerformance extends GuiScreen {
             offblur=false;
         }
         StaticStorage.scaledResolution = new ScaledResolution(mc);
-        if (LiquidBounce.INSTANCE.getRENDERLEAVESELECTED() == 1) {
+        if (FDPClientChina.INSTANCE.getRENDERLEAVESELECTED() == 1) {
             mc.displayGuiScreen(new GuiMainMenu());
         }
         α = 255;
@@ -46,15 +46,15 @@ public class GuiSelectPerformance extends GuiScreen {
         else {
             int h = (StaticStorage.scaledResolution.getScaledHeight() / 5);
             if (mouseY >= (1.5 * h) && mouseY <= (2.5 * h)) {
-                LiquidBounce.INSTANCE.setRENDERLEAVE(RenderLeave.HIGH);
+                FDPClientChina.INSTANCE.setRENDERLEAVE(RenderLeave.HIGH);
                 α = 1255;
             }
             if (mouseY >= (2.5 * h) && mouseY <= (3.5 * h)) {
-                LiquidBounce.INSTANCE.setRENDERLEAVE(RenderLeave.NORMAL);
+                FDPClientChina.INSTANCE.setRENDERLEAVE(RenderLeave.NORMAL);
                 α = 1255;
             }
             if (mouseY >= (3.5 * h) && mouseY <= (4.5 * h)) {
-                LiquidBounce.INSTANCE.setRENDERLEAVE(RenderLeave.LOW);
+                FDPClientChina.INSTANCE.setRENDERLEAVE(RenderLeave.LOW);
                 α = 1255;
             }
             super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -100,11 +100,11 @@ public class GuiSelectPerformance extends GuiScreen {
                 msTimer.reset();
             } else {
                 if (α == 1000) {
-                    if (LiquidBounce.INSTANCE.getRENDERLEAVESELECTED() == 3) {
+                    if (FDPClientChina.INSTANCE.getRENDERLEAVESELECTED() == 3) {
                         mc.displayGuiScreen(null);
-                        LiquidBounce.INSTANCE.setRENDERLEAVESELECTED(1);
+                        FDPClientChina.INSTANCE.setRENDERLEAVESELECTED(1);
                     } else {
-                        LiquidBounce.INSTANCE.setRENDERLEAVESELECTED(1);
+                        FDPClientChina.INSTANCE.setRENDERLEAVESELECTED(1);
                         mc.displayGuiScreen(new GuiMainMenu());
                     }
                 }

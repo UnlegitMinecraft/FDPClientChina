@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.utils.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.RenderLeave
 import net.ccbluex.liquidbounce.ui.client.GuiSelectPerformance
@@ -25,8 +25,8 @@ object BlurUtils : MinecraftInstance() {
 
     fun draw(x: Float, y: Float, width: Float, height: Float, radius: Float) {
         if(GuiSelectPerformance.offblur) return;
-        if(LiquidBounce.RENDERLEAVE==RenderLeave.LOW) return;
-        if(LiquidBounce.RENDERLEAVE==RenderLeave.NORMAL) return;
+        if(FDPClientChina.RENDERLEAVE==RenderLeave.LOW) return;
+        if(FDPClientChina.RENDERLEAVE==RenderLeave.NORMAL) return;
         if(Minecraft.getDebugFPS()<=35) return;
         try {
 

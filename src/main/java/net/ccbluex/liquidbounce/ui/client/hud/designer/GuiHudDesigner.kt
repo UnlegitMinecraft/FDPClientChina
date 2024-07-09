@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.designer
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
@@ -26,10 +26,10 @@ class GuiHudDesigner : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        LiquidBounce.hud.render(true, partialTicks)
-        LiquidBounce.hud.handleMouseMove(mouseX, mouseY)
+        FDPClientChina.hud.render(true, partialTicks)
+        FDPClientChina.hud.handleMouseMove(mouseX, mouseY)
 
-        if (!LiquidBounce.hud.elements.contains(selectedElement)) {
+        if (!FDPClientChina.hud.elements.contains(selectedElement)) {
             selectedElement = null
         }
 
@@ -38,7 +38,7 @@ class GuiHudDesigner : GuiScreen() {
         editorPanel.drawPanel(mouseX, mouseY, wheel)
 
         if (wheel != 0) {
-            for (element in LiquidBounce.hud.elements) {
+            for (element in FDPClientChina.hud.elements) {
                 if (element.isInBorder(mouseX / element.scale - element.renderX,
                                 mouseY / element.scale - element.renderY)) {
                     element.scale = element.scale + if (wheel > 0) 0.05f else -0.05f
@@ -57,7 +57,7 @@ class GuiHudDesigner : GuiScreen() {
             return
         }
 
-        LiquidBounce.hud.handleMouseClick(mouseX, mouseY, mouseButton)
+        FDPClientChina.hud.handleMouseClick(mouseX, mouseY, mouseButton)
 
         if (!(mouseX >= editorPanel.x && mouseX <= editorPanel.x + editorPanel.width && mouseY >= editorPanel.y &&
                         mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))) {
@@ -66,7 +66,7 @@ class GuiHudDesigner : GuiScreen() {
         }
 
         if (mouseButton == 0) {
-            for (element in LiquidBounce.hud.elements) {
+            for (element in FDPClientChina.hud.elements) {
                 if (element.isInBorder(mouseX / element.scale - element.renderX, mouseY / element.scale - element.renderY)) {
                     selectedElement = element
                     break
@@ -78,12 +78,12 @@ class GuiHudDesigner : GuiScreen() {
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         super.mouseReleased(mouseX, mouseY, state)
 
-        LiquidBounce.hud.handleMouseReleased()
+        FDPClientChina.hud.handleMouseReleased()
     }
 
     override fun onGuiClosed() {
         Keyboard.enableRepeatEvents(false)
-        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.hudConfig)
+        FDPClientChina.fileManager.saveConfig(FDPClientChina.fileManager.hudConfig)
 
         super.onGuiClosed()
     }
@@ -91,7 +91,7 @@ class GuiHudDesigner : GuiScreen() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         when (keyCode) {
             Keyboard.KEY_DELETE -> if (Keyboard.KEY_DELETE == keyCode && selectedElement != null) {
-                LiquidBounce.hud.removeElement(selectedElement!!)
+                FDPClientChina.hud.removeElement(selectedElement!!)
             }
 
             Keyboard.KEY_ESCAPE -> {
@@ -99,7 +99,7 @@ class GuiHudDesigner : GuiScreen() {
                 editorPanel.create = false
             }
 
-            else -> LiquidBounce.hud.handleKey(typedChar, keyCode)
+            else -> FDPClientChina.hud.handleKey(typedChar, keyCode)
         }
 
         super.keyTyped(typedChar, keyCode)

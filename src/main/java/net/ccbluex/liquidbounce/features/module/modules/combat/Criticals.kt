@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -268,11 +268,11 @@ class Criticals : Module() {
                 "noground" -> packet.onGround = false
                 "motion" -> {
                     when (motionValue.get().lowercase()) {
-                        "minemoratest" -> if (!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
+                        "minemoratest" -> if (!FDPClientChina.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
                     }
                 }
                 "hover" -> {
-                    if (hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
+                    if (hoverCombat.get() && !FDPClientChina.combatManager.inCombat) return
                     packet.isMoving = true
                     when (hoverValue.get().lowercase()) {
                         "2b2t" -> {

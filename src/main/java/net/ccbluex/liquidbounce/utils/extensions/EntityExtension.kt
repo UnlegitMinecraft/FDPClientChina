@@ -38,6 +38,9 @@ val Entity.hitBox: AxisAlignedBB
         return entityBoundingBox.expand(borderSize, borderSize, borderSize)
     }
 
+val Entity.eyes: Vec3
+    get() = getPositionEyes(1f)
+
 fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
     val origin = doubleArrayOf(eye.xCoord, eye.yCoord, eye.zCoord)
     val destMins = doubleArrayOf(box.minX, box.minY, box.minZ)

@@ -5,7 +5,7 @@ import cn.hanabi.gui.cloudmusic.impl.Lyric;
 import cn.hanabi.gui.cloudmusic.impl.Track;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.TickEvent;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -94,7 +94,7 @@ public class MusicManager {
         if (!musicFolder.exists())
             musicFolder.mkdirs(); // 文件夹不存在时创建
 
-        circleImage = new File(Minecraft.getMinecraft().mcDataDir.toString() + File.separator + LiquidBounce.CLIENT_NAME + File.separator + "circleImage");
+        circleImage = new File(Minecraft.getMinecraft().mcDataDir.toString() + File.separator + FDPClientChina.CLIENT_NAME + File.separator + "circleImage");
         if (!circleImage.exists()) {
             circleImage.mkdirs();
         }

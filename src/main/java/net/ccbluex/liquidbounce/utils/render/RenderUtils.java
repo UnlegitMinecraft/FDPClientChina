@@ -113,6 +113,7 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
     }
+
     private static final int[] DISPLAY_LISTS_2D = new int[4];
 
     static {

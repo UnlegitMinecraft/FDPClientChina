@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.features.command.Command
 
 class SpectateCommand : Command("spectate", arrayOf("spectateplayer", "remoteview",  "rv")) {
@@ -23,7 +23,7 @@ class SpectateCommand : Command("spectate", arrayOf("spectateplayer", "remotevie
             if (targetName == entity.name) {
                 mc.renderViewEntity = entity
                 chat("Now viewing perspective of §8${entity.name}§3.")
-                chat("Execute §8${LiquidBounce.commandManager.prefix}spectate §3again to go back to yours.")
+                chat("Execute §8${FDPClientChina.commandManager.prefix}spectate §3again to go back to yours.")
                 break
             }
         }

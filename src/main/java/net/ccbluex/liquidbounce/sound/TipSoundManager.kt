@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.sound
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.utils.FileUtils
 import java.io.File
 
@@ -10,9 +10,9 @@ class TipSoundManager {
     var startup: TipSoundPlayer
 
     init {
-        val enableSoundFile = File(LiquidBounce.fileManager.soundsDir, "enable.wav")
-        val disableSoundFile = File(LiquidBounce.fileManager.soundsDir, "disable.wav")
-        val startupFile = File(LiquidBounce.fileManager.soundsDir, "startup.wav")
+        val enableSoundFile = File(FDPClientChina.fileManager.soundsDir, "enable.wav")
+        val disableSoundFile = File(FDPClientChina.fileManager.soundsDir, "disable.wav")
+        val startupFile = File(FDPClientChina.fileManager.soundsDir, "startup.wav")
 
         if (!enableSoundFile.exists()) {
             FileUtils.unpackFile(enableSoundFile, "assets/minecraft/fdpclient/sound/enable.wav")

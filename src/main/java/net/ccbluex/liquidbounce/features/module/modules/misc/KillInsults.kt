@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EntityKilledEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
@@ -29,7 +29,7 @@ object KillInsults : Module() {
     )
     private val waterMarkValue = BoolValue("WaterMark", true)
 
-    private val insultFile = File(LiquidBounce.fileManager.dir, "insult.json")
+    private val insultFile = File(FDPClientChina.fileManager.dir, "insult.json")
     var insultWords = mutableListOf<String>()
 
     init {

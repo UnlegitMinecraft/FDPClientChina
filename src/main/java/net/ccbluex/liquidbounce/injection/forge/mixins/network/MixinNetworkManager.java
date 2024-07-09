@@ -10,7 +10,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
@@ -20,24 +20,22 @@ import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.util.MessageDeserializer;
-import net.minecraft.util.MessageDeserializer2;
-import net.minecraft.util.MessageSerializer;
-import net.minecraft.util.MessageSerializer2;
+import net.minecraft.util.*;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.net.InetAddress;
 import java.net.Proxy;
 
 @Mixin(NetworkManager.class)
 public abstract class MixinNetworkManager {
-
     /**
      * show player head in tab bar
      */
@@ -54,7 +52,7 @@ public abstract class MixinNetworkManager {
             return;
 
         final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
-        LiquidBounce.eventManager.callEvent(event);
+        FDPClientChina.eventManager.callEvent(event);
 
         if(event.isCancelled())
             callback.cancel();
@@ -67,7 +65,7 @@ public abstract class MixinNetworkManager {
 
         if(!PacketUtils.INSTANCE.handleSendPacket(packet)){
             final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.SEND);
-            LiquidBounce.eventManager.callEvent(event);
+            FDPClientChina.eventManager.callEvent(event);
 
             if(event.isCancelled())
                 callback.cancel();
@@ -108,7 +106,7 @@ public abstract class MixinNetworkManager {
 
     @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"))
     public void checkDisconnectedLoggerWarn(Logger instance, String s) {
-        if(!LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
+        if(!FDPClientChina.moduleManager.getModule(SilentDisconnect.class).getState()) {
             instance.warn(s); // it will spam "handleDisconnection() called twice" in console if SilentDisconnect is enabled
         }
     }

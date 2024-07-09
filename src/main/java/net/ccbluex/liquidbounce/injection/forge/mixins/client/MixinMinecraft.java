@@ -6,8 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import com.guimc.fuckpcl.PCLChecker;
-import javafx.embed.swing.JFXPanel;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClientChina;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
@@ -50,12 +49,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.AccessDeniedException;
+import java.util.Objects;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
@@ -104,6 +103,7 @@ public abstract class MixinMinecraft {
     public int getLimitFramerate() {
         return this.gameSettings.limitFramerate;
     }
+
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
     private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
@@ -112,8 +112,9 @@ public abstract class MixinMinecraft {
             MiscUtils.INSTANCE.showErrorPopup(warnStr);
             throw new AccessDeniedException(warnStr);
         }
-        LiquidBounce.INSTANCE.initClient();
+        FDPClientChina.INSTANCE.initClient();
     }
+
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
         ClientUtils.INSTANCE.setTitle();
@@ -122,14 +123,14 @@ public abstract class MixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
     private void displayGuiScreen(CallbackInfo callbackInfo) {
         if(currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
-            currentScreen = LiquidBounce.mainMenu;
+            currentScreen = FDPClientChina.mainMenu;
 
             ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
             currentScreen.setWorldAndResolution(Minecraft.getMinecraft(), scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
             skipRenderWorld = false;
         }
 
-        LiquidBounce.eventManager.callEvent(new ScreenEvent(currentScreen));
+        FDPClientChina.eventManager.callEvent(new ScreenEvent(currentScreen));
     }
 
     private long lastFrame = getTime();
@@ -154,14 +155,14 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;joinPlayerCounter:I", shift = At.Shift.BEFORE))
     private void onTick(final CallbackInfo callbackInfo) {
-        LiquidBounce.eventManager.callEvent(new TickEvent());
+        FDPClientChina.eventManager.callEvent(new TickEvent());
     }
 
     @Inject(method = "dispatchKeypresses", at = @At(value = "HEAD"))
     private void onKey(CallbackInfo callbackInfo) {
         try {
             if (Keyboard.getEventKeyState() && (currentScreen == null || (Modules.INSTANCE.getToggleIgnoreScreenValue().get() && this.currentScreen instanceof GuiContainer)))
-                LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
+                FDPClientChina.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
         } catch (Exception e){
             //e.printStackTrace();
         }
@@ -170,19 +171,19 @@ public abstract class MixinMinecraft {
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))
     private void onClickBlock(CallbackInfo callbackInfo) {
         if (this.leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
-            LiquidBounce.eventManager.callEvent(new ClickBlockEvent(objectMouseOver.getBlockPos(), this.objectMouseOver.sideHit));
+            FDPClientChina.eventManager.callEvent(new ClickBlockEvent(objectMouseOver.getBlockPos(), this.objectMouseOver.sideHit));
         }
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
     private void shutdown(CallbackInfo callbackInfo) {
-        LiquidBounce.INSTANCE.stopClient();
+        FDPClientChina.INSTANCE.stopClient();
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"))
     private void clickMouse(CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
-        if(LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
+        if(FDPClientChina.moduleManager.getModule(AutoClicker.class).getState())
             leftClickCounter = 0; // fix hit delay lol
     }
 
@@ -195,7 +196,7 @@ public abstract class MixinMinecraft {
     private void rightClickMouse(final CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT);
 
-        final FastPlace fastPlace = LiquidBounce.moduleManager.getModule(FastPlace.class);
+        final FastPlace fastPlace = FDPClientChina.moduleManager.getModule(FastPlace.class);
 
         if (fastPlace.getState())
             rightClickDelayTimer = fastPlace.getSpeedValue().get();
@@ -203,13 +204,13 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At("HEAD"))
     private void loadWorld(WorldClient p_loadWorld_1_, String p_loadWorld_2_, final CallbackInfo callbackInfo) {
-        LiquidBounce.eventManager.callEvent(new WorldEvent(p_loadWorld_1_));
+        FDPClientChina.eventManager.callEvent(new WorldEvent(p_loadWorld_1_));
     }
 
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir){
         if(RotationUtils.targetRotation != null && thePlayer != null) {
-            final Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
+            final Rotations rotations = FDPClientChina.moduleManager.getModule(Rotations.class);
             final float yaw = RotationUtils.targetRotation.getYaw();
             if(rotations.getHeadValue().get()){
                 thePlayer.rotationYawHead = yaw;
@@ -233,7 +234,7 @@ public abstract class MixinMinecraft {
                 BlockPos blockPos = this.objectMouseOver.getBlockPos();
 
                 if(this.leftClickCounter == 0)
-                    LiquidBounce.eventManager.callEvent(new ClickBlockEvent(blockPos, this.objectMouseOver.sideHit));
+                    FDPClientChina.eventManager.callEvent(new ClickBlockEvent(blockPos, this.objectMouseOver.sideHit));
 
 
                 if(this.theWorld.getBlockState(blockPos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockPos, this.objectMouseOver.sideHit)) {

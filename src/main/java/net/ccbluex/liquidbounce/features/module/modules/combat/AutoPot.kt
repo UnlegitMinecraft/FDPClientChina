@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -44,7 +44,7 @@ class AutoPot : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (notCombatValue.get() && LiquidBounce.combatManager.inCombat) return
+        if (notCombatValue.get() && FDPClientChina.combatManager.inCombat) return
         if (!mc.thePlayer.onGround) return
 
         if (throwing) {

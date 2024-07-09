@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.utils.RenderUtil
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClientChina
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -97,12 +97,12 @@ object HUD : Module() {
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
-        LiquidBounce.hud.render(false, event.partialTicks)
+        FDPClientChina.hud.render(false, event.partialTicks)
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        LiquidBounce.hud.update()
+        FDPClientChina.hud.update()
         RenderUtil.delta = RenderUtils.deltaTime.toFloat()
         if (mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
             lastFontEpsilon = fontEpsilonValue.get()
@@ -138,7 +138,7 @@ object HUD : Module() {
 
     @EventTarget
     fun onKey(event: KeyEvent) {
-        LiquidBounce.hud.handleKey('a', event.key)
+        FDPClientChina.hud.handleKey('a', event.key)
     }
 
     fun getHotbarEasePos(x: Int): Int {
