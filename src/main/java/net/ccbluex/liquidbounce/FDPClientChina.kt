@@ -43,15 +43,12 @@ import kotlin.concurrent.thread
 
 object FDPClientChina {
 
-
     // Client information
     const val CLIENT_NAME = "FDPCN CLIENT"
-    var RENDERLEAVE=RenderLeave.HIGH
-    var RENDERLEAVESELECTED=0
+    var RENDERLEAVE = RenderLeave.HIGH
+    var RENDERLEAVESELECTED = 0
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
-    var FPSLime=200
-    var FPSFlash=MSTimer()
     const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §b» "
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "FDPClient.Club"
@@ -86,7 +83,6 @@ object FDPClientChina {
 
     // Managers
     lateinit var moduleManager: ModuleManager
-
     lateinit var commandManager: CommandManager
     lateinit var eventManager: EventManager
     lateinit var subscriptions: Subscriptions
@@ -109,8 +105,7 @@ object FDPClientChina {
     private val dynamicLaunchOptions: Array<LaunchOption>
         get() = ClassUtils.resolvePackage(
                 "${LaunchOption::class.java.`package`.name}.options",
-                LaunchOption::class.java
-        )
+                LaunchOption::class.java)
                 .filter {
                     val annotation = it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
                     if (annotation != null) {
@@ -290,7 +285,7 @@ object FDPClientChina {
 
             // Save all available configs
             GuiCapeManager.save()
-            configManager.save(true, true)
+            configManager.save(saveConfigSet = true, forceSave = true)
             fileManager.saveAllConfigs()
 
             dynamicLaunchOptions.forEach {
