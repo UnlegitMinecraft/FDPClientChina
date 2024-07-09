@@ -32,6 +32,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Random;
 
+import static net.minecraft.client.renderer.GlStateManager.disableBlend;
+import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
 import static org.lwjgl.opengl.GL11.*;
 
 public class RenderUtil {
@@ -39,6 +41,10 @@ public class RenderUtil {
 
     public static double interpolate(double newPos, double oldPos) {
         return oldPos + (newPos - oldPos) * Minecraft.getMinecraft().timer.renderPartialTicks;
+    }
+
+    public static double interpolate(double current, double old, double scale) {
+        return old + (current - old) * scale;
     }
 
     public static void pre() {
@@ -2091,88 +2097,66 @@ public class RenderUtil {
         GlStateManager.popMatrix();
     }
 
-    /**
-     * 在LWJGL中渲染AWT图形
-     * @param shape 准备渲染的图形
-     * @param epsilon 图形精细度，传0不做处理
-     */
-    /*public static void drawAWTShape(Shape shape, double epsilon) {
-        PathIterator path=shape.getPathIterator(new AffineTransform());
-        Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
+    public static void drawCornerBox(double x, double y, double x2, double y2, double lw, Color color) {
+        double width = Math.abs(x2 - x);
+        double height = Math.abs(y2 - y);
+        double halfWidth = width / 4;
+        double halfHeight = height / 4;
+        start2D();
+        GL11.glPushMatrix();
+        GL11.glLineWidth((float) lw);
+        setColor(color);
 
-        GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
+        GL11.glBegin(GL_LINE_STRIP);
+        GL11.glVertex2d(x + halfWidth, y);
+        GL11.glVertex2d(x, y);
+        GL11.glVertex2d(x, y + halfHeight);
+        GL11.glEnd();
 
-        tess.gluTessCallback(GLU.GLU_TESS_BEGIN, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_END, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_VERTEX, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_COMBINE, TessCallback.INSTANCE);
 
-        switch (path.getWindingRule()){
-            case PathIterator.WIND_EVEN_ODD:{
-                tess.gluTessProperty(GLU.GLU_TESS_WINDING_RULE, GLU.GLU_TESS_WINDING_ODD);
-                break;
-            }
-            case PathIterator.WIND_NON_ZERO:{
-                tess.gluTessProperty(GLU.GLU_TESS_WINDING_RULE, GLU.GLU_TESS_WINDING_NONZERO);
-                break;
-            }
-        }
+        GL11.glBegin(GL_LINE_STRIP);
+        GL11.glVertex2d(x, y + height - halfHeight);
+        GL11.glVertex2d(x, y + height);
+        GL11.glVertex2d(x + halfWidth, y + height);
+        GL11.glEnd();
 
-        // 缓存单个图形路径上的点用于精简以提升性能
-        ArrayList<Double[]> pointsCache = new ArrayList<>();
+        GL11.glBegin(GL_LINE_STRIP);
+        GL11.glVertex2d(x + width - halfWidth, y + height);
+        GL11.glVertex2d(x + width, y + height);
+        GL11.glVertex2d(x + width, y + height - halfHeight);
+        GL11.glEnd();
 
-        tess.gluTessBeginPolygon(null);
+        GL11.glBegin(GL_LINE_STRIP);
+        GL11.glVertex2d(x + width, y + halfHeight);
+        GL11.glVertex2d(x + width, y);
+        GL11.glVertex2d(x + width - halfWidth, y);
+        GL11.glEnd();
 
-        while (!path.isDone()){
-            double[] segment=new double[6];
-            int type=path.currentSegment(segment);
-            switch (type){
-                case PathIterator.SEG_MOVETO:{
-                    tess.gluTessBeginContour();
-                    pointsCache.add(new Double[] {segment[0], segment[1]});
-                    cp[0] = segment[0];
-                    cp[1] = segment[1];
-                    break;
-                }
-                case PathIterator.SEG_LINETO:{
-                    pointsCache.add(new Double[] {segment[0], segment[1]});
-                    cp[0] = segment[0];
-                    cp[1] = segment[1];
-                    break;
-                }
-                case PathIterator.SEG_QUADTO:{
-                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}}, 10);
-                    pointsCache.addAll(Arrays.asList(points));
-                    cp[0] = segment[2];
-                    cp[1] = segment[3];
-                    break;
-                }
-                case PathIterator.SEG_CUBICTO:{
-                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}, new Double[]{segment[4], segment[5]}}, 10);
-                    pointsCache.addAll(Arrays.asList(points));
-                    cp[0] = segment[4];
-                    cp[1] = segment[5];
-                    break;
-                }
-                case PathIterator.SEG_CLOSE:{
-                    // 精简路径上的点
-                    for(Double[] point : MathUtils.simplifyPoints(pointsCache.toArray(new Double[0][0]), epsilon)){
-                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
-                    }
-                    // 清除缓存以便画下一个图形
-                    pointsCache.clear();
-                    tess.gluTessEndContour();
-                    break;
-                }
-            }
-            path.next();
-        }
-
-        tess.gluEndPolygon();
-        tess.gluDeleteTess();
+        GL11.glPopMatrix();
+        stop2D();
     }
 
-    public static void tessVertex(GLUtessellator tessellator, double[] coords) {
-        tessellator.gluTessVertex(coords, 0, new VertexData(coords));
-    }*/
+    public static void start2D() {
+        glEnable(3042);
+        glDisable(3553);
+        glBlendFunc(770, 771);
+        glEnable(2848);
+    }
+
+    public static void stop2D() {
+        glEnable(3553);
+        glDisable(3042);
+        glDisable(2848);
+        enableTexture2D();
+        disableBlend();
+        glColor4f(1, 1, 1, 1);
+    }
+
+    public static void setColor(Color color) {
+        float alpha = (color.getRGB() >> 24 & 0xFF) / 255.0F;
+        float red = (color.getRGB() >> 16 & 0xFF) / 255.0F;
+        float green = (color.getRGB() >> 8 & 0xFF) / 255.0F;
+        float blue = (color.getRGB() & 0xFF) / 255.0F;
+        GL11.glColor4f(red, green, blue, alpha);
+    }
 }

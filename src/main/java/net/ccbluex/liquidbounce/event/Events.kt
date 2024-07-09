@@ -131,7 +131,11 @@ class PushOutEvent : CancellableEvent()
 /**
  * Called when screen is going to be rendered
  */
-class Render2DEvent(val partialTicks: Float, val scaledResolution: ScaledResolution) : Event()
+class Render2DEvent(val partialTicks: Float, val scaledResolution: ScaledResolution) : Event() {
+    fun getResolution(): ScaledResolution {
+        return this.scaledResolution
+    }
+}
 
 /**
  * Called when world is going to be rendered
