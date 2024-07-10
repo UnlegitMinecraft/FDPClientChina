@@ -1260,8 +1260,7 @@ object KillAura : Module() {
                 return
             }
             val entityDist = mc.thePlayer.getDistanceToEntityBox(currentTarget as Entity)
-            canSwing =
-                entityDist < swingRangeValue.get() && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
+            canSwing = entityDist < rangeValue.get() && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
             if (hitAbleValue.get()) {
                 hitable = entityDist <= maxRange.toDouble()
                 return
@@ -1272,10 +1271,7 @@ object KillAura : Module() {
                 return
             }
             val wallTrace = mc.thePlayer.rayTraceWithServerSideRotation(entityDist)
-            hitable = RotationUtils.isFaced(
-                currentTarget!!,
-                maxRange.toDouble()
-            ) && (entityDist < discoverRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
+            hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble()) && (entityDist < discoverRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
         }
 
         /**

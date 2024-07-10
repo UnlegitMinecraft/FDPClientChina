@@ -55,19 +55,19 @@ fun Entity.rayTrace(blockReachDistance: Double): MovingObjectPosition {
     return this.rayTrace(blockReachDistance, 1f)
 }
 
-fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition {
+fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition? {
     val vec3 = this.getPositionEyes(1f)
     val vec31 = this.getVectorForRotation(pitch, yaw)
     val vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance)
     return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true)
 }
 
-fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, rotation: Rotation): MovingObjectPosition {
+fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, rotation: Rotation): MovingObjectPosition? {
     return this.rayTraceWithCustomRotation(blockReachDistance, rotation.yaw, rotation.pitch)
 }
 
-fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Double): MovingObjectPosition {
-    return this.rayTraceWithCustomRotation(blockReachDistance, RotationUtils.serverRotation)
+fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Double): MovingObjectPosition? {
+    return RotationUtils.serverRotation?.let { this.rayTraceWithCustomRotation(blockReachDistance, it) }
 }
 
 fun EntityPlayer.getEyeVec3(): Vec3 {

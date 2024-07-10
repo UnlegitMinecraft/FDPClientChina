@@ -204,11 +204,11 @@ class NoSlow : Module() {
                 mc.netHandler.addToSendQueue(C0EPacketClickWindow(0, 36, 0, 2, ItemStack(Item.getItemById(166)), 0))
             }
 
-            if (!mc.thePlayer.isUsingItem && mc.thePlayer.heldItem.item is ItemSword) {
+            if (!mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
                 canmovedelay = false
             }
 
-            if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem.item is ItemSword && event.eventState == EventState.POST) {
+            if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword && event.eventState == EventState.POST) {
                 canmovedelay = true
             }
         }
