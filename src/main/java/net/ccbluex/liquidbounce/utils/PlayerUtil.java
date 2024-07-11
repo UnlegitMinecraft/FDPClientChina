@@ -16,6 +16,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.*;
+import org.lwjgl.input.Keyboard;
 
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;
@@ -266,5 +267,13 @@ public class PlayerUtil {
             i2 -= 0.1;
         }
         return mc.thePlayer.posY - distance;
+    }
+
+    public static boolean keysDown() {
+        return Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode()) || Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode()) || Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode()) || Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode());
+    }
+
+    public static boolean jumpDown() {
+        return Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode());
     }
 }

@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.features.module.modules.world.RScaffold.jumpDown
 import net.ccbluex.liquidbounce.utils.MoveUtils.isMoving
+import net.ccbluex.liquidbounce.utils.PlayerUtil
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.entity.Entity
 import kotlin.math.cos
@@ -17,7 +17,7 @@ class HypixelBhop : SpeedMode("HypixelBhop") {
         if ((mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isSneaking)) {
             return;
         }
-        if (!jumpDown() && isMoving() && mc.currentScreen == null) {
+        if (!PlayerUtil.jumpDown() && isMoving() && mc.currentScreen == null) {
             if (!mc.thePlayer.onGround) {
                 return
             }
