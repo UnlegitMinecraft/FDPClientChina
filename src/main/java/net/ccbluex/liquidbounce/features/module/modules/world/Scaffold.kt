@@ -47,7 +47,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.*
 
-@ModuleInfo(name = "Scaffold", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_V)
+@ModuleInfo(name = "Scaffold", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
 class Scaffold : Module() {
 
     // Block place
