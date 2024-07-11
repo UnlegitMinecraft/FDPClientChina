@@ -1,7 +1,6 @@
 # FDPCNClient
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/UnlegitMinecraft/FDPClientChina)
-![GitHub lines of code](https://tokei.rs/b1/github/UnlegitMinecraft/FDPClientChina)
 ![GitHub Star](https://img.shields.io/github/stars/UnlegitMinecraft/FDPClientChina?style=flat-square)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2FSteamTools-Team%2FSteamTools%2Fbadge%3Fref%3Ddevelop&style=flat-square)](https://github.com/UnlegitMinecraft/FDPClientChina/actions/workflows/build.yml?query=event%3Apush)
 [![Release Download](https://img.shields.io/github/downloads/UnlegitMinecraft/FDPClientChina/total?style=flat-square)](https://github.com/UnlegitMinecraft/FDPClientChina/releases)
@@ -10,7 +9,7 @@
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: https://FDPClient.club 
-Latest: [github-actions](https://github.com/UnlegitMinecraft/FDPClientChina/actions/workflows/build.yml?query=event%3Apush)    
+Latest: [Github-actions](https://github.com/UnlegitMinecraft/FDPClientChina/actions/workflows/build.yml?query=event%3Apush)    
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMinecraft/FDPClientChina/issues).

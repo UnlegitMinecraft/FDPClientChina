@@ -567,6 +567,16 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         return RotationUtils.getRotationFromPosition(x, z, y);
     }
 
+    public static float[] getRotations(final BlockPos blockPos) {
+        final double n = blockPos.getX() + 0.45 - mc.thePlayer.posX;
+        final double n2 = blockPos.getY() + 0.45 - (mc.thePlayer.posY + mc.thePlayer.getEyeHeight());
+        final double n3 = blockPos.getZ() + 0.45 - mc.thePlayer.posZ;
+        return new float[] { mc.thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float((float)(Math.atan2(n3, n) * 57.295780181884766) - 90.0f - mc.thePlayer.rotationYaw), clampTo90(mc.thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float((float)(-(Math.atan2(n2, MathHelper.sqrt_double(n * n + n3 * n3)) * 57.295780181884766)) - mc.thePlayer.rotationPitch)) };
+    }
+
+    public static float clampTo90(final float n) {
+        return MathHelper.clamp_float(n, -90.0f, 90.0f);
+    }
 
     /**
      *
@@ -633,5 +643,20 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     @Override
     public boolean handleEvents() {
         return true;
+    }
+
+    public static MovingObjectPosition rayTraceCustom(double blockReachDistance, float yaw, float pitch) {
+        final Vec3 vec3 = mc.thePlayer.getPositionEyes(1.0F);
+        final Vec3 vec31 = getVectorForRotation(pitch, yaw);
+        final Vec3 vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance);
+        return mc.theWorld.rayTraceBlocks(vec3, vec32, false, false, true);
+    }
+
+    public static Vec3 getVectorForRotation(float pitch, float yaw) {
+        float f = MathHelper.cos(-yaw * 0.017453292F - 3.1415927F);
+        float f1 = MathHelper.sin(-yaw * 0.017453292F - 3.1415927F);
+        float f2 = -MathHelper.cos(-pitch * 0.017453292F);
+        float f3 = MathHelper.sin(-pitch * 0.017453292F);
+        return new Vec3(f1 * f2, f3, f * f2);
     }
 }

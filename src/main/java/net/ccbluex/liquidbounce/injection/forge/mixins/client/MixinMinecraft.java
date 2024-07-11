@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
+import net.ccbluex.liquidbounce.features.module.modules.world.RScaffold;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -31,6 +32,8 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Util;
@@ -196,8 +199,16 @@ public abstract class MixinMinecraft {
 
         final FastPlace fastPlace = FDPClientChina.moduleManager.getModule(FastPlace.class);
 
-        if (fastPlace.getState())
+        if (fastPlace.getState() && !FDPClientChina.moduleManager.getModule(RScaffold.class).stopFastPlace()) {
+            if (fastPlace.getBlocksonly().get()) {
+                ItemStack item = thePlayer.getHeldItem();
+                if (item == null || !(item.getItem() instanceof ItemBlock)) {
+                    return;
+                }
+            }
             rightClickDelayTimer = fastPlace.getSpeedValue().get();
+        }
+
     }
 
     @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At("HEAD"))

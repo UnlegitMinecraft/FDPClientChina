@@ -6,9 +6,10 @@
 package net.ccbluex.liquidbounce.utils.block
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.minecraft.block.Block
+import net.minecraft.block.*
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
@@ -25,6 +26,26 @@ object BlockUtils : MinecraftInstance() {
 
     @JvmStatic
     fun getBlock(blockPos: BlockPos?): Block? = mc.theWorld?.getBlockState(blockPos)?.block
+
+    @JvmStatic
+    fun getBlock(x: Double, y: Double, z: Double): Block? {
+        return getBlockState(BlockPos(x, y, z)).block
+    }
+
+    @JvmStatic
+    fun getBlockState(blockPos: BlockPos?): IBlockState {
+        return mc.theWorld.getBlockState(blockPos)
+    }
+
+    @JvmStatic
+    fun isFluid(block: Block): Boolean {
+        return block.material === Material.lava || block.material === Material.water
+    }
+
+    @JvmStatic
+    fun isInteractable(block: Block): Boolean {
+        return block is BlockFurnace || block is BlockFenceGate || block is BlockChest || block is BlockEnderChest || block is BlockEnchantmentTable || block is BlockBrewingStand || block is BlockBed || block is BlockDropper || block is BlockDispenser || block is BlockHopper || block is BlockAnvil || block === Blocks.crafting_table
+    }
 
     /**
      * Get material from [blockPos]
@@ -143,4 +164,9 @@ object BlockUtils : MinecraftInstance() {
 
     @JvmStatic
     fun floorVec3(vec3: Vec3) = Vec3(floor(vec3.xCoord), floor(vec3.yCoord), floor(vec3.zCoord))
+
+    @JvmStatic
+    fun isSamePos(blockPos: BlockPos, blockPos2: BlockPos): Boolean {
+        return blockPos === blockPos2 || (blockPos.x == blockPos2.x && blockPos.y == blockPos2.y && blockPos.z == blockPos2.z)
+    }
 }

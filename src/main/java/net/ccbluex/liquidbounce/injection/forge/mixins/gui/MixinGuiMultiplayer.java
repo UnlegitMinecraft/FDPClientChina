@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
-        buttonList.add(new GuiButton(997, 5, 8, 98, 20, "%ui.antiForge%"));
+        buttonList.add(new GuiButton(997, 110, 8, 98, 20, "%ui.antiForge%"));
         buttonList.add(new GuiButton(998, width - 104, 8, 98, 20, "%ui.serverSpoof%"));
         buttonList.add(new GuiButton(999, width - 208, 8, 98, 20, "Proxy"));
     }
