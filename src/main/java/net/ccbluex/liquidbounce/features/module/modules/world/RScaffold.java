@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -31,6 +32,7 @@ public class RScaffold extends Module { // from b4 :)
     private final BoolValue fastOnRMB = new BoolValue("Fast On RMB",false);
     private final BoolValue safeWalk = new BoolValue("Safe Walk",false);
     private final BoolValue silentSwing = new BoolValue("Silent Swing",true);
+    private final BoolValue showBlockCount = new BoolValue("Show Block Count",true);
 
     private MovingObjectPosition placeBlock;
     private int lastSlot;
@@ -40,7 +42,7 @@ public class RScaffold extends Module { // from b4 :)
     public int index;
     public boolean rmbDown;
     private double startPos = -1;
-    private Map<BlockPos, Timer> highlight = new HashMap<>();
+    private final Map<BlockPos, Timer> highlight = new HashMap<>();
     private boolean forceStrict;
     private boolean down;
     private boolean delay;
@@ -163,11 +165,7 @@ public class RScaffold extends Module { // from b4 :)
                                 if (rayCasted == null || !BlockUtils.isSamePos(raycast.getBlockPos(), rayCasted.getBlockPos())) {
                                     if (((ItemBlock) heldItem.getItem()).canPlaceBlockOnSide(mc.theWorld, raycast.getBlockPos(), raycast.sideHit, mc.thePlayer, heldItem)) {
                                         if (rayCasted == null) {
-                                            if ((forceStrict(checkYaw)) && i == 1) {
-                                                forceStrict = true;
-                                            } else {
-                                                forceStrict = false;
-                                            }
+                                            forceStrict = (forceStrict(checkYaw)) && i == 1;
                                             rayCasted = raycast;
                                             placeYaw = fixedYaw;
                                             placePitch = fixedPitch;
@@ -262,6 +260,43 @@ public class RScaffold extends Module { // from b4 :)
                 mouseEvent.setCanceled(true);
             }
         }
+    }
+
+    @EventTarget
+    public void onRender2D(Render2DEvent ev) {
+        if (!nullCheck() || !showBlockCount.get()) {
+            return;
+        }
+        if (mc.currentScreen != null) {
+            return;
+        }
+        final ScaledResolution scaledResolution = new ScaledResolution(mc);
+        int blocks = totalBlocks();
+        String color = "§";
+        if (blocks <= 5) {
+            color += "c";
+        }
+        else if (blocks <= 15) {
+            color += "6";
+        }
+        else if (blocks <= 25) {
+            color += "e";
+        }
+        else {
+            color = "";
+        }
+        mc.fontRendererObj.drawStringWithShadow(color + blocks + " §rblock" + (blocks == 1 ? "" : "s"), scaledResolution.getScaledWidth()/2 + 8, scaledResolution.getScaledHeight()/2 + 4, -1);
+    }
+
+    public int totalBlocks() {
+        int totalBlocks = 0;
+        for (int i = 0; i < 9; ++i) {
+            final ItemStack stack = mc.thePlayer.inventory.mainInventory[i];
+            if (stack != null && stack.getItem() instanceof ItemBlock && canBePlaced((ItemBlock) stack.getItem()) && stack.stackSize > 0) {
+                totalBlocks += stack.stackSize;
+            }
+        }
+        return totalBlocks;
     }
 
     public boolean stopFastPlace() {

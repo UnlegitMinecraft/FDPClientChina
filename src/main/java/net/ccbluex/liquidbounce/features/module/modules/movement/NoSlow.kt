@@ -27,6 +27,7 @@ import net.minecraft.util.EnumFacing
 import java.util.*
 import kotlin.math.sqrt
 
+
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan", "GrimAC", "Grim118", "Hypixel"), "Vanilla")
@@ -199,7 +200,10 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        postPlace = false;
+        postPlace = false
+        if (!mc.thePlayer.isUsingItem || holdingSword()) {
+            return
+        }
         if (modeValue.equals("hypixel")) {
             if (mc.thePlayer.ticksExisted % 3 == 0) {
                 mc.thePlayer.sendQueue.addToSendQueue(
@@ -214,7 +218,6 @@ class NoSlow : Module() {
                 )
             }
         }
-
     }
 
     @EventTarget
@@ -395,6 +398,13 @@ class NoSlow : Module() {
             return checkPotionFood
         }
         return stack.item is ItemBucketMilk && checkPotionFood
+    }
+
+    private fun holdingSword(): Boolean {
+        if (mc.thePlayer.heldItem == null) {
+            return false
+        }
+        return mc.thePlayer.heldItem.item is ItemSword
     }
 
     override val tag: String
