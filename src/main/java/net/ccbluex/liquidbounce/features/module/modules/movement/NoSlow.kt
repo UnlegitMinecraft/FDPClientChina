@@ -29,7 +29,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan", "GrimAC", "Grim118", "Hypixel"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan", "GrimAC", "Grim118"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -198,26 +198,6 @@ class NoSlow : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        postPlace = false;
-        if (modeValue.equals("hypixel")) {
-            if (mc.thePlayer.ticksExisted % 3 == 0) {
-                mc.thePlayer.sendQueue.addToSendQueue(
-                    C08PacketPlayerBlockPlacement(
-                        BlockPos(-1, -1, -1),
-                        1,
-                        null,
-                        0f,
-                        0f,
-                        0f
-                    )
-                )
-            }
-        }
-
-    }
-
-    @EventTarget
     fun onUpdate(event: MotionEvent) {
         if (modeValue.equals("grim118")) {
             if (event.eventState == EventState.PRE && mc.thePlayer.isUsingItem && isHoldingPotionAndSword(mc.thePlayer.heldItem,false,true)) {
@@ -231,13 +211,6 @@ class NoSlow : Module() {
             if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword && event.eventState == EventState.POST) {
                 canmovedelay = true
             }
-        }
-
-        if (event.eventState == EventState.POST && modeValue.equals("hypixel") && postPlace) {
-            if (mc.thePlayer.ticksExisted % 3 == 0) {
-                mc.thePlayer.sendQueue.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem));
-            }
-            postPlace = false;
         }
 
         if ((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
@@ -294,7 +267,7 @@ class NoSlow : Module() {
         val packet = event.packet
 
         if(modeValue.equals("grim118")) {
-            if (mc.thePlayer.isUsingItem && isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
+            if (mc.thePlayer != null && mc.thePlayer.heldItem != null && mc.thePlayer.isUsingItem && isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
                 if (packet is S30PacketWindowItems) {
                     event.cancelEvent()
                     eatSlow = true
@@ -304,11 +277,11 @@ class NoSlow : Module() {
                 }
             }
         }
-        if (isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
+        if (mc.thePlayer != null && mc.thePlayer.heldItem != null && isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
             if (packet is C08PacketPlayerBlockPlacement)
                 eatSlow = false
         }
-        if (isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
+        if (mc.thePlayer != null && mc.thePlayer.heldItem != null && isHoldingPotionAndSword(mc.thePlayer.heldItem, false, true)) {
             if (packet is C07PacketPlayerDigging && packet.status == C07PacketPlayerDigging.Action.RELEASE_USE_ITEM) {
                 eatSlow = false
             }

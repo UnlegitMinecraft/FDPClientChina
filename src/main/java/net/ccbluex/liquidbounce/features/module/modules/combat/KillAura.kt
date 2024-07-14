@@ -191,7 +191,8 @@ object KillAura : Module() {
                 "HoldKey",
                 "KeyBlock",
                 "Test2",
-                "Blink"
+                "Blink",
+                "Hypixel"
             ),
             "Vanilla"
         ).displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
@@ -590,6 +591,10 @@ object KillAura : Module() {
             updateHitable()
             val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
 
+            if (autoBlockValue.equals("Hypixel") && EventState.POST == event.eventState) {
+                mc.getNetHandler().addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()));
+            }
+
             if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("HoldKey") && canBlock) {
                 if (inRangeDiscoveredTargets.isEmpty()) {
                     mc.gameSettings.keyBindUseItem.pressed = false
@@ -632,6 +637,12 @@ object KillAura : Module() {
                     wasBlink = false
                 }
                 return
+            }
+
+            if (autoBlockValue.equals("Hypixel")) {
+                mc.thePlayer.sendQueue.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1));
+                mc.thePlayer.sendQueue.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                mc.gameSettings.keyBindUseItem.pressed = true
             }
 
             if (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
@@ -1094,6 +1105,7 @@ object KillAura : Module() {
 
                     "keyblock" -> mc.gameSettings.keyBindUseItem.pressed = false
                     "legit", "test", "holdkey", "Legit2" -> null
+                    "Hypixel" -> mc.gameSettings.keyBindUseItem.pressed = true
                     else -> null
                 }
             }
