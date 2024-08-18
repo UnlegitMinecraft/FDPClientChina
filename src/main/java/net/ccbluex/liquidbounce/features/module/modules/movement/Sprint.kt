@@ -6,11 +6,13 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.MoveUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -28,7 +30,7 @@ class Sprint : Module() {
     val sneakValue = BoolValue("Sneak", false)
     val collideValue = BoolValue("Collide", false)
     val allDirectionsValue = BoolValue("AllDirections", false)
-    val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "RotateSpoof", "Toggle", "Spoof", "SpamSprint", "NoStopSprint", "Minemora", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
+    val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "RotateSpoof", "Toggle", "Spoof", "SpamSprint", "NoStopSprint", "Minemora", "LimitSpeed", "None","Hypixel"), "None").displayable { allDirectionsValue.get() }
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed", 0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
     private val noPacketValue = BoolValue("NoPackets", false)
@@ -80,6 +82,17 @@ class Sprint : Module() {
         } else {
             switchStat = false
             forceSprint = false
+        }
+    }
+
+    @EventTarget
+    fun onMotion(evnet: MotionEvent) {
+        if (allDirectionsBypassValue.equals("Hypixel")) {
+            if (mc.thePlayer.moveForward <= 0)
+                mc.thePlayer.setSprinting(false)
+
+            if (MoveUtils.isMoving())
+                mc.thePlayer.isSprinting = true
         }
     }
 
